@@ -23,6 +23,9 @@ tasks.withType(JavaCompile) {
 
 dependencies {
   compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
+  compileOnly 'org.projectlombok:lombok:1.18.28'
+  annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
   implementation 'org.postgresql:postgresql:42.6.0'
 
 
