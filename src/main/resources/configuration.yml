@@ -1,0 +1,7 @@
+database:
+  username: root
+  password: root
+  url: jdbc:postgresql://bd:5432/bank
+  connector: org.postgresql.Driver
+business:
+  monthAccrual: 1

@@ -1,9 +1,10 @@
-package by.clevertec.bank;
+package by.clevertec.bank.controller;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.*;
 
+import by.clevertec.bank.model.domain.Bank;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
@@ -20,22 +21,22 @@ public class HelloServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<html><body>");
 
-        Connection connection = connect();
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM shop");
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                BigDecimal cost = resultSet.getBigDecimal("cost");
-
-
-                out.println("id: " + id);
-                out.println("Name: " + cost.toString());
-                out.println("\n===================\n");
-            }
-        } catch (SQLException e) {
-
-        }
+//        Connection connection = connect();
+//        try {
+//            Statement statement = connection.createStatement();
+//            ResultSet resultSet = statement.executeQuery("SELECT * FROM shop");
+//            while (resultSet.next()) {
+//                int id = resultSet.getInt("id");
+//                BigDecimal cost = resultSet.getBigDecimal("cost");
+//
+//
+//                out.println("id: " + id);
+//                out.println("Name: " + cost.toString());
+//                out.println("\n===================\n");
+//            }
+//        } catch (SQLException e) {
+//
+//        }
 
         // Hello
 
@@ -45,7 +46,7 @@ public class HelloServlet extends HttpServlet {
 
     public Connection connect() {//todo del
 
-        final String url = "jdbc:postgresql://localhost:5432/shop";
+        final String url = "jdbc:postgresql://bd:5432/shop";
         final String user = "root";
         final String password = "root";
         Connection conn = null;
