@@ -5,15 +5,18 @@ import by.clevertec.bank.dao.ConnectionPool;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @WebListener
 public class ServletContextListenerImpl implements ServletContextListener {
+    private static final Logger logger = LogManager.getLogger();
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         AppConfiguration.getInstance();
         ConnectionPool.getInstance();
+        logger.info("Context successfully loaded");
     }
 
     @Override

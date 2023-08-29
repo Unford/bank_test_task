@@ -3,6 +3,8 @@ package by.clevertec.bank.dao;
 import by.clevertec.bank.config.AppConfiguration;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,6 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class ConnectionPool {
+    private static final Logger logger = LogManager.getLogger();
+
     private static final String DATABASE_NAME = "databaseName";
     private static final String PORT_NUMBER = "portNumber";
     private static final String SERVER_NAME = "serverName";
@@ -52,8 +56,7 @@ public final class ConnectionPool {
                 try {
                     DriverManager.deregisterDriver(driver);
                 } catch (SQLException e) {
-                    //todo log
-                    System.err.println(e);
+                    logger.error("SQL error while deregister driver", e);
                 }
             });
         }
