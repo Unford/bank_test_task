@@ -27,7 +27,7 @@ dependencies {
   annotationProcessor 'org.projectlombok:lombok:1.18.28'
   implementation 'org.yaml:snakeyaml:2.1'
 
-
+  implementation 'com.zaxxer:HikariCP:5.0.1'
   implementation 'org.postgresql:postgresql:42.6.0'
 
 
