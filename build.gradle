@@ -26,6 +26,7 @@ dependencies {
   compileOnly 'org.projectlombok:lombok:1.18.28'
   annotationProcessor 'org.projectlombok:lombok:1.18.28'
   implementation 'org.yaml:snakeyaml:2.1'
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
   implementation 'com.zaxxer:HikariCP:5.0.1'
   implementation 'org.postgresql:postgresql:42.6.0'
