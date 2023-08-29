@@ -7,6 +7,8 @@ import lombok.Data;
 @Builder
 public class CustomError {
     public static final int NOT_FOUND = 404;
+    public static final int BAD_REQUEST = 400;
+
     public static final int INTERNAL = 500;
 
     private int code;

@@ -28,6 +28,10 @@ dependencies {
   implementation 'org.yaml:snakeyaml:2.1'
   implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 
+  implementation 'org.apache.bval:bval-jsr:2.0.6'
+  implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
+
+
   implementation 'com.zaxxer:HikariCP:5.0.1'
   implementation 'org.postgresql:postgresql:42.6.0'
 
