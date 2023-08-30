@@ -2,7 +2,7 @@ package by.clevertec.bank.controller.command;
 
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.model.dto.CustomError;
-import by.clevertec.bank.util.JsonParser;
+import by.clevertec.bank.util.DataMapper;
 import by.clevertec.bank.util.ValidatorHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +36,7 @@ public abstract class Command {
         String body = null;
         try {
             body = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-            return JsonParser.getInstance().readValue(body, tClass);
+            return DataMapper.getObjectMapper().readValue(body, tClass);
         } catch (IOException e) {
             logger.error("error while reading body", e);
             throw new CommandException("error while reading body", CustomError.BAD_REQUEST, e);

@@ -5,7 +5,7 @@ import by.clevertec.bank.controller.command.CommandType;
 import by.clevertec.bank.dao.ConnectionPool;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.model.dto.CustomError;
-import by.clevertec.bank.util.JsonParser;
+import by.clevertec.bank.util.DataMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -69,7 +69,7 @@ public class AccountTransactionServlet extends HttpServlet {
                     .build();
             resp.setStatus(e.getHttpCode());
         }
-        ObjectMapper mapper = JsonParser.getInstance();
+        ObjectMapper mapper = DataMapper.getObjectMapper();
         PrintWriter out = resp.getWriter();
         out.write(mapper.writeValueAsString(v));
         out.flush();
