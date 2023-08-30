@@ -2,10 +2,10 @@ package by.clevertec.bank.controller;
 
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.controller.command.CommandType;
-import by.clevertec.bank.dao.ConnectionPool;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.model.dto.CustomError;
 import by.clevertec.bank.util.DataMapper;
+import by.clevertec.bank.util.ValidatorHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,47 +17,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-@WebServlet(name = "transaction", value = "/transaction")
+@WebServlet(name = "transaction", value = "/transactions")
 public class AccountTransactionServlet extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
 
-    @Override
-    protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("text/html");
-        PrintWriter out = resp.getWriter();
-        out.println("<html><body>");
-
-        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM banks");
-            while (resultSet.next()) {
-                int id = resultSet.getInt("bank_id");
-                String cost = resultSet.getString("name");
-
-
-                out.println("id: " + id);
-                out.println("Name: " + cost.toString());
-            }
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-
-        // todo Hello
-
-        out.println("</body></html>");
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req,
-                          HttpServletResponse resp) throws ServletException, IOException {
-        String parameter = req.getParameter(RequestParameter.COMMAND);
-        Command command = CommandType.defineCommand(parameter, req.getServletPath());
+    private void processCommand(Command command, HttpServletRequest req,
+                                HttpServletResponse resp) throws IOException {
         Object v;
         try {
             v = command.execute(req);
@@ -73,6 +39,28 @@ public class AccountTransactionServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         out.write(mapper.writeValueAsString(v));
         out.flush();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req,
+                         HttpServletResponse resp) throws ServletException, IOException {
+        String account = req.getParameter(RequestParameter.ACCOUNT);
+        Command command;
+        if (account != null) {
+           command = CommandType.GET_ALL_TRANSACTIONS_BY_ACCOUNT.getCommand();
+        } else {
+            command = CommandType.GET_ALL_TRANSACTIONS.getCommand();
+        }
+        processCommand(command, req, resp);
+
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req,
+                          HttpServletResponse resp) throws ServletException, IOException {
+        String parameter = req.getParameter(RequestParameter.COMMAND);
+        Command command = CommandType.defineCommand(parameter, req.getServletPath());
+        processCommand(command, req, resp);
     }
 
 }

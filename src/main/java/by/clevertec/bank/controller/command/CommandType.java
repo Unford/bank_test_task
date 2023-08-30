@@ -3,12 +3,16 @@ package by.clevertec.bank.controller.command;
 import by.clevertec.bank.controller.ServletPath;
 import by.clevertec.bank.controller.command.impl.DefaultCommand;
 import by.clevertec.bank.controller.command.impl.DepositCommand;
+import by.clevertec.bank.controller.command.impl.GetAllTransactionsByAccountCommand;
+import by.clevertec.bank.controller.command.impl.GetAllTransactionsCommand;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public enum CommandType {
     DEPOSIT(new DepositCommand(), ServletPath.TRANSACTION),
-    DEFAULT_COMMAND(new DefaultCommand());
+    GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand()),
+    DEFAULT_COMMAND(new DefaultCommand()),
+    GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand());
 
 
     private static final Logger logger = LogManager.getLogger();

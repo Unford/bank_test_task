@@ -7,4 +7,5 @@ public final class ServletPath {
     public static final String TRANSACTION = AccountTransactionServlet.class
             .getAnnotation(WebServlet.class).value()[0];
 
+
 }

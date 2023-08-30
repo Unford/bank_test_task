@@ -7,19 +7,21 @@ import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
 
 import java.sql.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> implements AccountTransactionDao {
-    private static final String ACCOUNT_TRANSACTION_ID = "id";
+    private static final String ACCOUNT_TRANSACTION_ID = "account_transaction_id";
     private static final String ACCOUNT_TRANSACTION_SUM = "sum";
     private static final String ACCOUNT_TRANSACTION_DATE = "date";
     private static final String ACCOUNT_TRANSACTION_SENDER_ID = "sender_account_id";
     private static final String ACCOUNT_TRANSACTION_OWNER_ID = "owner_accounts_id";
     private static final String DEPOSIT_QUERY = "insert into accounts_transactions (sum, date, owner_accounts_id) values (?,?,?)";
+    private static final String FIND_ALL_BY_ACCOUNT_QUERY = "SELECT * from accounts_transactions INNER JOIN bank_accounts " +
+            "ON accounts_transactions.account_transaction_id = bank_accounts.bank_account_id WHERE bank_accounts.account = ?";
+
     private static final String FIND_ALL_QUERY = "SELECT * from accounts_transactions";
 
     @Override
@@ -27,7 +29,7 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
         List<AccountTransaction> list = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(FIND_ALL_QUERY)) {
-                while (resultSet.next()){
+                while (resultSet.next()) {
                     AccountTransaction v = mapEntity(resultSet);
                     list.add(v);
                 }
@@ -70,7 +72,7 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
                     .to(Account.builder().id(resultSet.getLong(ACCOUNT_TRANSACTION_OWNER_ID)).build())
                     .from(Account.builder().id(resultSet.getLong(ACCOUNT_TRANSACTION_SENDER_ID)).build())
                     .build();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             logger.error("mapping account transaction error");
             throw e;
         }
@@ -108,5 +110,24 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
 
         }
         return accountTransaction;
+    }
+
+    @Override
+    public List<AccountTransaction> findAllByAccount(String account) throws DaoException {
+        List<AccountTransaction> list = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(FIND_ALL_BY_ACCOUNT_QUERY)) {
+            statement.setString(1, account);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AccountTransaction v = mapEntity(resultSet);
+                    list.add(v);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Find All ingredients by account query error");
+            throw new DaoException("Find All ingredients by account query error", e);
+        }
+        return list;
     }
 }

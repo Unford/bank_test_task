@@ -1,5 +1,6 @@
 package by.clevertec.bank.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
@@ -13,7 +14,10 @@ public final class DataMapper {
 
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .findAndRegisterModules()
-            .setDateFormat(new SimpleDateFormat("dd-MM-yyyy hh:mm"));
+            .setDateFormat(new SimpleDateFormat("dd-MM-yyyy hh:mm"))
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+
     private static final ModelMapper modelMapper;
 
     static {
