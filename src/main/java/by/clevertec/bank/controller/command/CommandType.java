@@ -1,15 +1,14 @@
 package by.clevertec.bank.controller.command;
 
 import by.clevertec.bank.controller.ServletPath;
-import by.clevertec.bank.controller.command.impl.DefaultCommand;
-import by.clevertec.bank.controller.command.impl.DepositCommand;
-import by.clevertec.bank.controller.command.impl.GetAllTransactionsByAccountCommand;
-import by.clevertec.bank.controller.command.impl.GetAllTransactionsCommand;
+import by.clevertec.bank.controller.command.impl.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public enum CommandType {
     DEPOSIT(new DepositCommand(), ServletPath.TRANSACTION),
+    WITHDRAWAL(new WithdrawalCommand(), ServletPath.TRANSACTION),
+
     GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand()),
     DEFAULT_COMMAND(new DefaultCommand()),
     GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand());
@@ -43,7 +42,7 @@ public enum CommandType {
         } catch (IllegalArgumentException e) {
             logger.error("Unknown command {}", parameter, e);
         }
-        logger.debug(commandType);
+        logger.debug("Command - {}, {}", commandType, servletPath);
         return commandType.getCommand();
 
     }

@@ -25,10 +25,10 @@ public abstract class AbstractDao<T extends AbstractDaoEntity> {
     public abstract Optional<T> findById(long id) throws DaoException;
 
 
-    public abstract boolean create(T entity) throws DaoException;
+    public abstract T create(T entity) throws DaoException;
 
 
-    public abstract boolean update(T entity) throws DaoException;
+    public abstract T update(T entity) throws DaoException;
 
 
     public abstract boolean deleteById(long id) throws DaoException;

@@ -1,6 +1,7 @@
 package by.clevertec.bank.service.impl;
 
 import by.clevertec.bank.dao.EntityTransaction;
+import by.clevertec.bank.dao.impl.AccountDaoImpl;
 import by.clevertec.bank.dao.impl.AccountTransactionDaoIml;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.exception.ServiceException;
@@ -16,7 +17,7 @@ import org.modelmapper.ModelMapper;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class AccountTransactionServiceImpl implements AccountTransactionService {
+public final class AccountTransactionServiceImpl implements AccountTransactionService {
     private static final Logger logger = LogManager.getLogger();
 
     private AccountTransactionServiceImpl() {
@@ -34,30 +35,46 @@ public class AccountTransactionServiceImpl implements AccountTransactionService 
         try (transaction) {
             AccountTransactionDaoIml accountTransactionDao = new AccountTransactionDaoIml();
             transaction.initialize(accountTransactionDao);
+            transactionDto.setFrom(null);
             AccountTransaction createdDeposit = accountTransactionDao
-                    .deposit(DataMapper.getModelMapper().map(transactionDto, AccountTransaction.class));
+                    .create(DataMapper.getModelMapper().map(transactionDto, AccountTransaction.class));
             return DataMapper.getModelMapper().map(createdDeposit, TransactionDto.class);
         } catch (DaoException e) {
-            transaction.rollback();
             logger.error(e);
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public TransactionDto withdrawal(BigDecimal sum, Account account) throws ServiceException {
-        return null;
+    public TransactionDto withdrawal(TransactionDto transactionDto) throws ServiceException {
+        transactionDto.setSum(transactionDto.getSum().negate());
+        transactionDto.setFrom(null);
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountTransactionDaoIml accountTransactionDao = new AccountTransactionDaoIml();
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            transaction.initialize(accountTransactionDao, accountDao);
+
+            BigDecimal sum = accountDao.sumAllByAccountId(transactionDto.getTo().getId());
+            if (sum.add(transactionDto.getSum()).signum() >= 0){
+                AccountTransaction createdDeposit = accountTransactionDao
+                        .create(DataMapper.getModelMapper().map(transactionDto, AccountTransaction.class));
+                return DataMapper.getModelMapper().map(createdDeposit, TransactionDto.class);
+            }else {
+                throw new ServiceException("Not enough money to withdrawal");
+            }
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public TransactionDto transferMoney(BigDecimal sum, Account from, Account to) throws ServiceException {
+    public TransactionDto transferMoney(TransactionDto transactionDto) throws ServiceException {
         return null;
     }
 
-    @Override
-    public TransactionDto accrueIncome(double percent) throws ServiceException {
-        return null;
-    }
+
 
     @Override
     public List<TransactionDto> findAllByAccount(String account) throws ServiceException {

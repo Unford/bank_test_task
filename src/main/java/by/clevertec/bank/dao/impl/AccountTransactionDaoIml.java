@@ -18,11 +18,15 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     private static final String ACCOUNT_TRANSACTION_DATE = "date";
     private static final String ACCOUNT_TRANSACTION_SENDER_ID = "sender_account_id";
     private static final String ACCOUNT_TRANSACTION_OWNER_ID = "owner_accounts_id";
-    private static final String DEPOSIT_QUERY = "insert into accounts_transactions (sum, date, owner_accounts_id) values (?,?,?)";
+    private static final String CREATE_QUERY = "insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)";
     private static final String FIND_ALL_BY_ACCOUNT_QUERY = "SELECT * from accounts_transactions INNER JOIN bank_accounts " +
             "ON accounts_transactions.account_transaction_id = bank_accounts.bank_account_id WHERE bank_accounts.account = ?";
 
     private static final String FIND_ALL_QUERY = "SELECT * from accounts_transactions";
+    private static final String FIND_BY_ID_QUERY = "SELECT * from accounts_transactions where account_transaction_id = ?";
+
+
+
 
     @Override
     public List<AccountTransaction> findAll() throws DaoException {
@@ -35,25 +39,53 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
                 }
             }
         } catch (SQLException e) {
-            logger.error("Find All ingredients query error");
-            throw new DaoException("Find All ingredients query error", e);
+            logger.error("Find All transactions query error");
+            throw new DaoException("Find All transactions query error", e);
         }
         return list;
     }
 
     @Override
     public Optional<AccountTransaction> findById(long id) throws DaoException {
-        return Optional.empty();
+        Optional<AccountTransaction> accountTransaction = Optional.empty();
+
+        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY)) {
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    accountTransaction = Optional.ofNullable(mapEntity(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Find transaction by id query error");
+            throw new DaoException("Find transaction by id query error", e);
+        }
+        return accountTransaction;
     }
 
     @Override
-    public boolean create(AccountTransaction entity) throws DaoException {
-        return false;
+    public AccountTransaction create(AccountTransaction accountTransaction) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            logger.debug(CREATE_QUERY);
+            accountTransaction.setDateTime(LocalDateTime.now());
+            setPreparedStatement(statement, accountTransaction);
+            statement.executeUpdate();
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    accountTransaction.setId(resultSet.getLong(1));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Create transaction query error", e);
+            throw new DaoException("Create transaction query error", e);
+
+        }
+        return accountTransaction;
     }
 
     @Override
-    public boolean update(AccountTransaction entity) throws DaoException {
-        return false;
+    public AccountTransaction update(AccountTransaction entity) throws DaoException {
+        return null;
     }
 
     @Override
@@ -84,6 +116,12 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
             statement.setBigDecimal(1, entity.getSum());
             statement.setTimestamp(2, Timestamp.valueOf(entity.getDateTime()));
             statement.setLong(3, entity.getTo().getId());
+            if (entity.getFrom() != null) {
+                statement.setLong(4, entity.getFrom().getId());
+            } else {
+                statement.setNull(4, Types.BIGINT);
+            }
+
 
         } catch (SQLException e) {
             logger.error("error while setting account transaction statement parameters", e);
@@ -91,26 +129,6 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
         }
     }
 
-
-    @Override
-    public AccountTransaction deposit(AccountTransaction accountTransaction) throws DaoException {
-        try (PreparedStatement statement = connection.prepareStatement(DEPOSIT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            logger.debug(DEPOSIT_QUERY);
-            accountTransaction.setDateTime(LocalDateTime.now());
-            setPreparedStatement(statement, accountTransaction);
-            statement.executeUpdate();
-            try (ResultSet resultSet = statement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    accountTransaction.setId(resultSet.getLong(1));
-                }
-            }
-        } catch (SQLException e) {
-            logger.error("Deposit query error", e);
-            throw new DaoException("Deposit query error", e);
-
-        }
-        return accountTransaction;
-    }
 
     @Override
     public List<AccountTransaction> findAllByAccount(String account) throws DaoException {
@@ -130,4 +148,6 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
         }
         return list;
     }
+
+
 }
