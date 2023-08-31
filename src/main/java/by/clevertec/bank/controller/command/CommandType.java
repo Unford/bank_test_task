@@ -8,10 +8,15 @@ import org.apache.logging.log4j.Logger;
 public enum CommandType {
     DEPOSIT(new DepositCommand(), ServletPath.TRANSACTION),
     WITHDRAWAL(new WithdrawalCommand(), ServletPath.TRANSACTION),
+    TRANSFER(new TransferCommand(), ServletPath.TRANSACTION),
+
 
     GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand()),
     DEFAULT_COMMAND(new DefaultCommand()),
-    GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand());
+    GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand()),
+    GET_ACCOUNT_BALANCE(new GetAccountBalanceCommand(), ServletPath.ACCOUNT),
+    GET_ACCOUNT_BY_ID(new GetAccountByIdCommand(), ServletPath.ACCOUNT),
+    GET_ALL_ACCOUNTS(new GetAllAccountsCommand(),ServletPath.ACCOUNT );
 
 
     private static final Logger logger = LogManager.getLogger();

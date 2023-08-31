@@ -1,5 +1,6 @@
 package by.clevertec.bank.model.dto;
 
+import by.clevertec.bank.util.MoneyTransferGroup;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Jacksonized
@@ -23,8 +25,10 @@ public class TransactionDto {
     @Positive
     private BigDecimal sum;
     @Valid
+    @NotNull(groups = MoneyTransferGroup.class)
     private AccountDto from;
     @NotNull
     @Valid
     private AccountDto to;
+    private LocalDateTime dateTime;
 }

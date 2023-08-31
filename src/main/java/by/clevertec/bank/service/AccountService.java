@@ -7,5 +7,5 @@ import java.math.BigDecimal;
 
 public interface AccountService extends CrudService<AccountDto> {
     void accrueIncome(int percent) throws ServiceException;
-    BigDecimal getAccountSum(Long id) throws ServiceException;
+    BigDecimal getAccountSum(long id) throws ServiceException;
 }

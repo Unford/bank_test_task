@@ -37,15 +37,43 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             " AND EXTRACT(MONTH FROM last_accrual_date) < EXTRACT(MONTH FROM CURRENT_DATE)";
     private static final String UPDATE_ACCRUAL_DATE_QUERY = "UPDATE bank_accounts SET last_accrual_date = ?" +
             " WHERE bank_account_id = ?;";
+    private static final String FIND_BY_ID_QUERY = "SELECT * from bank_accounts where bank_account_id = ?";
+    private static final String FIND_ALL_QUERY = "SELECT * FROM bank_accounts";
+
 
     @Override
     public List<Account> findAll() throws DaoException {
-        return null;
+        List<Account> list = new ArrayList<>();
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet resultSet = statement.executeQuery(FIND_ALL_QUERY)) {
+                while (resultSet.next()) {
+                    Account v = mapEntity(resultSet);
+                    list.add(v);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Find All accounts query error");
+            throw new DaoException("Find All accounts query error", e);
+        }
+        return list;
     }
 
     @Override
     public Optional<Account> findById(long id) throws DaoException {
-        return Optional.empty();
+        Optional<Account> account = Optional.empty();
+
+        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY)) {
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    account = Optional.ofNullable(mapEntity(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Find account by id query error");
+            throw new DaoException("Find account by id query error", e);
+        }
+        return account;
     }
 
     @Override

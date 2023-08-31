@@ -8,11 +8,11 @@ import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
 import by.clevertec.bank.model.dto.AccountDto;
-import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.util.DataMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
             for (Account a : accounts) {
                 logger.debug("accrue income -  {}", a);
                 BigDecimal s = accountDao.sumAllByAccountId(a.getId());
-                if (s.signum() == 1){
+                if (s.signum() == 1) {
                     transactionDao.create(AccountTransaction.builder()
                             .sum(s.multiply(BigDecimal.valueOf(percent)).divide(ONE_HUNDRED))
                             .to(a).build());
@@ -60,12 +60,44 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public BigDecimal getAccountSum(Long id) throws ServiceException {
-        return null;
+    public BigDecimal getAccountSum(long id) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            transaction.initialize(accountDao);
+            return accountDao.sumAllByAccountId(id);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
     }
 
     @Override
     public List<AccountDto> findAll() throws ServiceException {
-        return null;
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            transaction.initialize(accountDao);
+            ModelMapper modelMapper = DataMapper.getModelMapper();
+            return accountDao.findAll().stream()
+                    .map(e -> modelMapper.map(e, AccountDto.class)).toList();
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public AccountDto findById(long id) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            transaction.initialize(accountDao);
+            ModelMapper modelMapper = DataMapper.getModelMapper();
+            return modelMapper.map(accountDao.findById(id), AccountDto.class);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
     }
 }

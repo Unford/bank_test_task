@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CrudService<T> {
     List<T> findAll() throws ServiceException;
+
+    T findById(long id) throws ServiceException;
 }

@@ -20,7 +20,8 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     private static final String ACCOUNT_TRANSACTION_OWNER_ID = "owner_accounts_id";
     private static final String CREATE_QUERY = "insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)";
     private static final String FIND_ALL_BY_ACCOUNT_QUERY = "SELECT * from accounts_transactions INNER JOIN bank_accounts " +
-            "ON accounts_transactions.account_transaction_id = bank_accounts.bank_account_id WHERE bank_accounts.account = ?";
+            "ON accounts_transactions.sender_account_id = bank_accounts.bank_account_id OR " +
+            "accounts_transactions.owner_accounts_id = bank_accounts.bank_account_id WHERE bank_accounts.account = ?";
 
     private static final String FIND_ALL_QUERY = "SELECT * from accounts_transactions";
     private static final String FIND_BY_ID_QUERY = "SELECT * from accounts_transactions where account_transaction_id = ?";

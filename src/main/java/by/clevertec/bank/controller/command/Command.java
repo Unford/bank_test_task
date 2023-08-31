@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.groups.Default;
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +19,12 @@ public abstract class Command {
     protected static final Logger logger = LogManager.getLogger();
 
     protected <T> void validate(T value) throws CommandException {
+        this.validate(value, Default.class);
+
+    }
+    protected <T> void validate(T value, Class<?>... groups) throws CommandException {
         Validator validator = ValidatorHolder.getValidator();
-        Set<ConstraintViolation<T>> validations = validator.validate(value);
+        Set<ConstraintViolation<T>> validations = validator.validate(value, groups);
         if (!validations.isEmpty()) {
             StringBuilder builder = new StringBuilder();
             validations.forEach(v -> builder.append(v.getPropertyPath())

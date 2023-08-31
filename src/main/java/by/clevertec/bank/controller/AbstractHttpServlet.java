@@ -5,10 +5,8 @@ import by.clevertec.bank.controller.command.CommandType;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.model.dto.CustomError;
 import by.clevertec.bank.util.DataMapper;
-import by.clevertec.bank.util.ValidatorHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,12 +16,11 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@WebServlet(name = "transaction", value = "/transactions")
-public class AccountTransactionServlet extends HttpServlet {
-    private static final Logger logger = LogManager.getLogger();
+public abstract class AbstractHttpServlet extends HttpServlet {
+    protected static final Logger logger = LogManager.getLogger();
 
-    private void processCommand(Command command, HttpServletRequest req,
-                                HttpServletResponse resp) throws IOException {
+    protected void processCommand(Command command, HttpServletRequest req,
+                                  HttpServletResponse resp) throws IOException {
         Object v;
         try {
             v = command.execute(req);
@@ -42,25 +39,10 @@ public class AccountTransactionServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp) throws ServletException, IOException {
-        String account = req.getParameter(RequestParameter.ACCOUNT);
-        Command command;
-        if (account != null) {
-           command = CommandType.GET_ALL_TRANSACTIONS_BY_ACCOUNT.getCommand();
-        } else {
-            command = CommandType.GET_ALL_TRANSACTIONS.getCommand();
-        }
-        processCommand(command, req, resp);
-
-    }
-
-    @Override
     protected void doPost(HttpServletRequest req,
                           HttpServletResponse resp) throws ServletException, IOException {
         String parameter = req.getParameter(RequestParameter.COMMAND);
         Command command = CommandType.defineCommand(parameter, req.getServletPath());
         processCommand(command, req, resp);
     }
-
 }
