@@ -1,53 +1,58 @@
 plugins {
-  id 'java'
-  id 'war'
+    id 'java'
+    id 'war'
+    id "io.freefair.aspectj.post-compile-weaving" version "6.4.3.1"
 }
 
 group 'by.clevertec'
 version '1.0'
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
+
 ext {
-  junitVersion = '5.8.2'
+    junitVersion = '5.8.2'
 }
 
 sourceCompatibility = '17'
 targetCompatibility = '17'
 
 tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
+    options.encoding = 'UTF-8'
 }
 
 dependencies {
-  compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
-  compileOnly 'org.projectlombok:lombok:1.18.28'
-  annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
-  implementation 'org.yaml:snakeyaml:2.1'
-  implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-  implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+    implementation 'org.yaml:snakeyaml:2.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
 
+    implementation 'org.aspectj:aspectjrt:1.9.19'
+    implementation 'org.aspectj:aspectjweaver:1.9.19'
 
-  implementation 'org.apache.bval:bval-jsr:2.0.6'
-  implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
-  implementation 'org.modelmapper:modelmapper:3.1.1'
-
-
-  implementation 'com.zaxxer:HikariCP:5.0.1'
-  implementation 'org.postgresql:postgresql:42.6.0'
-
-  implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
-  implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-
-  implementation 'com.itextpdf:itextpdf:5.5.13.3'
+    implementation 'org.apache.bval:bval-jsr:2.0.6'
+    implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
+    implementation 'org.modelmapper:modelmapper:3.1.1'
 
 
-  testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    implementation 'com.zaxxer:HikariCP:5.0.1'
+    implementation 'org.postgresql:postgresql:42.6.0'
+
+    implementation 'org.apache.logging.log4j:log4j-api:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
 
 test {
-  useJUnitPlatform()  }
+    useJUnitPlatform()
+}
