@@ -2,9 +2,12 @@ package by.clevertec.bank.dao.impl;
 
 import by.clevertec.bank.dao.AbstractDao;
 import by.clevertec.bank.dao.AccountTransactionDao;
+import by.clevertec.bank.dao.ColumnName;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
+import by.clevertec.bank.model.domain.User;
+import by.clevertec.bank.model.domain.Bank;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,21 +15,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static by.clevertec.bank.dao.ColumnName.*;
+
 public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> implements AccountTransactionDao {
-    private static final String ACCOUNT_TRANSACTION_ID = "account_transaction_id";
-    private static final String ACCOUNT_TRANSACTION_SUM = "sum";
-    private static final String ACCOUNT_TRANSACTION_DATE = "date";
-    private static final String ACCOUNT_TRANSACTION_SENDER_ID = "sender_account_id";
-    private static final String ACCOUNT_TRANSACTION_OWNER_ID = "owner_accounts_id";
+
     private static final String CREATE_QUERY = "insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)";
-    private static final String FIND_ALL_BY_ACCOUNT_QUERY = "SELECT * from accounts_transactions INNER JOIN bank_accounts " +
-            "ON accounts_transactions.sender_account_id = bank_accounts.bank_account_id OR " +
-            "accounts_transactions.owner_accounts_id = bank_accounts.bank_account_id WHERE bank_accounts.account = ?";
+    private static final String FIND_ALL_BY_ACCOUNT_QUERY = "SELECT * from accounts_transactions INNER JOIN bank_accounts ba " +
+            "ON accounts_transactions.sender_account_id = ba.bank_account_id OR " +
+            "accounts_transactions.owner_accounts_id = ba.bank_account_id join banks b on b.bank_id = ba.bank_id join users u on u.user_id = ba.user_id WHERE ba.account = ?";
 
     private static final String FIND_ALL_QUERY = "SELECT * from accounts_transactions";
-    private static final String FIND_BY_ID_QUERY = "SELECT * from accounts_transactions where account_transaction_id = ?";
-
-
+    private static final String FIND_BY_ID_QUERY = """
+            SELECT
+                at.*,
+                ba_sender.account AS sender_account,
+                b_sender.name AS sender_bank,
+                u_sender.full_name AS sender_full_name,
+                ba_owner.account AS owner_account,
+                b_owner.name AS owner_bank,
+                u_owner.full_name AS owner_full_name
+            FROM accounts_transactions at
+                     LEFT JOIN bank_accounts ba_sender ON ba_sender.bank_account_id = at.sender_account_id
+                     LEFT JOIN bank_accounts ba_owner ON ba_owner.bank_account_id = at.owner_accounts_id
+                     LEFT JOIN banks b_sender ON b_sender.bank_id = ba_sender.bank_id
+                     LEFT JOIN banks b_owner ON b_owner.bank_id = ba_owner.bank_id
+                     LEFT JOIN users u_sender ON u_sender.user_id = ba_sender.user_id
+                     LEFT JOIN users u_owner ON u_owner.user_id = ba_owner.user_id
+            WHERE account_transaction_id = ?;""";
 
 
     @Override
@@ -54,7 +69,7 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    accountTransaction = Optional.ofNullable(mapEntity(resultSet));
+                    accountTransaction = Optional.ofNullable(mapFullEntity(resultSet));
                 }
             }
         } catch (SQLException e) {
@@ -81,7 +96,7 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
             throw new DaoException("Create transaction query error", e);
 
         }
-        return accountTransaction;
+        return findById(accountTransaction.getId()).orElse(accountTransaction);
     }
 
     @Override
@@ -99,14 +114,39 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     protected AccountTransaction mapEntity(ResultSet resultSet) throws SQLException {
         try {
             return AccountTransaction.builder()
-                    .id(resultSet.getLong(ACCOUNT_TRANSACTION_ID))
-                    .dateTime(resultSet.getTimestamp(ACCOUNT_TRANSACTION_DATE).toLocalDateTime())
-                    .sum(resultSet.getBigDecimal(ACCOUNT_TRANSACTION_SUM))
-                    .to(Account.builder().id(resultSet.getLong(ACCOUNT_TRANSACTION_OWNER_ID)).build())
-                    .from(Account.builder().id(resultSet.getLong(ACCOUNT_TRANSACTION_SENDER_ID)).build())
+                    .id(resultSet.getLong(Transaction.ACCOUNT_TRANSACTION_ID))
+                    .dateTime(resultSet.getTimestamp(Transaction.ACCOUNT_TRANSACTION_DATE).toLocalDateTime())
+                    .sum(resultSet.getBigDecimal(Transaction.ACCOUNT_TRANSACTION_SUM))
+                    .to(Account.builder().id(resultSet.getLong(Transaction.ACCOUNT_TRANSACTION_OWNER_ID)).build())
+                    .from(Account.builder().id(resultSet.getLong(Transaction.ACCOUNT_TRANSACTION_SENDER_ID)).build())
                     .build();
         } catch (SQLException e) {
             logger.error("mapping account transaction error");
+            throw e;
+        }
+    }
+
+    private AccountTransaction mapFullEntity(ResultSet rs) throws SQLException {
+        try {
+            return AccountTransaction.builder()
+                    .id(rs.getLong(Transaction.ACCOUNT_TRANSACTION_ID))
+                    .dateTime(rs.getTimestamp(Transaction.ACCOUNT_TRANSACTION_DATE).toLocalDateTime())
+                    .sum(rs.getBigDecimal(Transaction.ACCOUNT_TRANSACTION_SUM))
+                    .from(Account.builder()
+                            .id(rs.getLong(Transaction.ACCOUNT_TRANSACTION_SENDER_ID))
+                            .owner(User.builder().fullName(rs.getString(ColumnName.User.SENDER_FULL_NAME)).build())
+                            .bank(Bank.builder().name(rs.getString(ColumnName.Bank.SENDER_BANK_NAME)).build())
+                            .account(rs.getString(ColumnName.Account.SENDER_ACCOUNT))
+                            .build())
+                    .to(Account.builder()
+                            .id(rs.getLong(Transaction.ACCOUNT_TRANSACTION_OWNER_ID))
+                            .owner(User.builder().fullName(rs.getString(ColumnName.User.OWNER_FULL_NAME)).build())
+                            .bank(Bank.builder().name(rs.getString(ColumnName.Bank.OWNER_BANK_NAME)).build())
+                            .account(rs.getString(ColumnName.Account.OWNER_ACCOUNT))
+                            .build())
+                    .build();
+        } catch (SQLException e) {
+            logger.error("mapping full account transaction error");
             throw e;
         }
     }

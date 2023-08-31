@@ -9,6 +9,7 @@ services:
       - postgres
     volumes:
       - ./logs:/usr/local/tomcat/logs
+      - ./check:/usr/local/tomcat/check
     restart: unless-stopped
     depends_on:
       - bd

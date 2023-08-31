@@ -2,9 +2,9 @@ package by.clevertec.bank.dao.impl;
 
 import by.clevertec.bank.dao.AbstractDao;
 import by.clevertec.bank.dao.AccountDao;
+import by.clevertec.bank.dao.ColumnName;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.Account;
-import by.clevertec.bank.model.domain.AccountTransaction;
 import by.clevertec.bank.model.domain.Bank;
 import by.clevertec.bank.model.domain.User;
 
@@ -15,13 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
-    private static final String ACCOUNT_ID = "bank_account_id";
-    private static final String ACCOUNT_NUM = "account";
-    private static final String OPEN_DATE = "open_date";
-    private static final String LAST_ACCRUAL_DATE = "last_accrual_date";
-    private static final String BANK_ID = "bank_id";
-    private static final String USER_ID = "user_id";
+
 
     private static final String SUM_BY_ID = """
             SELECT SUM( CASE
@@ -95,12 +91,12 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     protected Account mapEntity(ResultSet resultSet) throws SQLException {
         try {
             return Account.builder()
-                    .id(resultSet.getLong(ACCOUNT_ID))
-                    .account(resultSet.getString(ACCOUNT_NUM))
-                    .lastAccrualDate(resultSet.getDate(LAST_ACCRUAL_DATE).toLocalDate())
-                    .openDate(resultSet.getDate(OPEN_DATE).toLocalDate())
-                    .bank(Bank.builder().id(resultSet.getLong(BANK_ID)).build())
-                    .owner(User.builder().id(resultSet.getLong(USER_ID)).build())
+                    .id(resultSet.getLong(ColumnName.Account.ACCOUNT_ID))
+                    .account(resultSet.getString(ColumnName.Account.ACCOUNT_NUM))
+                    .lastAccrualDate(resultSet.getDate(ColumnName.Account.LAST_ACCRUAL_DATE).toLocalDate())
+                    .openDate(resultSet.getDate(ColumnName.Account.OPEN_DATE).toLocalDate())
+                    .bank(Bank.builder().id(resultSet.getLong(ColumnName.Account.BANK_ID)).build())
+                    .owner(User.builder().id(resultSet.getLong(ColumnName.Account.USER_ID)).build())
                     .build();
         } catch (SQLException e) {
             logger.error("mapping account error");

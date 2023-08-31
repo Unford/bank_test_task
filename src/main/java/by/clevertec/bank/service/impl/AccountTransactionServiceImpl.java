@@ -9,6 +9,7 @@ import by.clevertec.bank.model.domain.AccountTransaction;
 import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.AccountTransactionService;
 import by.clevertec.bank.util.DataMapper;
+import by.clevertec.bank.util.PdfFileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -36,9 +37,10 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
             AccountDaoImpl accountDao = new AccountDaoImpl();
             transaction.initialize(accountTransactionDao, accountDao);
             transactionDto.setFrom(null);
-            if (accountDao.findById(transactionDto.getId()).isPresent()) {
+            if (accountDao.findById(transactionDto.getTo().getId()).isPresent()) {
                 AccountTransaction createdDeposit = accountTransactionDao
                         .create(DataMapper.getModelMapper().map(transactionDto, AccountTransaction.class));
+                PdfFileUtils.saveCheck(createdDeposit);
                 return DataMapper.getModelMapper().map(createdDeposit, TransactionDto.class);
             } else {
                 throw new ServiceException("Account not found!");
@@ -62,9 +64,10 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
             if (accountDao.findById(transactionDto.getTo().getId()).isPresent()) {
                 BigDecimal sum = accountDao.sumAllByAccountId(transactionDto.getTo().getId());
                 if (sum.add(transactionDto.getSum()).signum() >= 0) {
-                    AccountTransaction createdDeposit = accountTransactionDao
+                    AccountTransaction createdWithdrawal = accountTransactionDao
                             .create(DataMapper.getModelMapper().map(transactionDto, AccountTransaction.class));
-                    return DataMapper.getModelMapper().map(createdDeposit, TransactionDto.class);
+                    PdfFileUtils.saveCheck(createdWithdrawal);
+                    return DataMapper.getModelMapper().map(createdWithdrawal, TransactionDto.class);
                 } else {
                     throw new ServiceException("Not enough money to withdrawal");
                 }
@@ -90,9 +93,10 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
                 if (accountDao.findById(transactionDto.getTo().getId()).isPresent()) {
                     BigDecimal money = accountDao.sumAllByAccountId(transactionDto.getFrom().getId());
                     if (money.subtract(transactionDto.getSum()).signum() >= 0) {
-                        AccountTransaction createdDeposit = accountTransactionDao
+                        AccountTransaction createdTransfer = accountTransactionDao
                                 .create(DataMapper.getModelMapper().map(transactionDto, AccountTransaction.class));
-                        return DataMapper.getModelMapper().map(createdDeposit, TransactionDto.class);
+                        PdfFileUtils.saveCheck(createdTransfer);
+                        return DataMapper.getModelMapper().map(createdTransfer, TransactionDto.class);
                     } else {
                         throw new ServiceException("Not enough money to transfer!");
                     }
