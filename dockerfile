@@ -1,6 +1,7 @@
 FROM gradle:7.4.2-jdk17 as gradle_builder
 WORKDIR /home/gradle/src
-COPY --chown=gradle:gradle . .
+COPY --chown=gradle:gradle .  .
+
 COPY /src/main/resources/docker-configuration.yml ./src/main/resources/configuration.yml
 RUN gradle build --no-daemon
 

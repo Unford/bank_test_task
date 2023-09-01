@@ -1,24 +1,10 @@
-/**
- * The PdfFileUtils class provides methods for generating and saving PDF files for bank transactions and account
- * statements.
- * <p>
- * The PdfFileUtils class provides methods for generating and saving PDF files for bank transactions and account
- * statements.
- * <p>
- * The PdfFileUtils class provides methods for generating and saving PDF files for bank transactions and account
- * statements.
- * <p>
- * The PdfFileUtils class provides methods for generating and saving PDF files for bank transactions and account
- * statements.
- */
-/**
- * The PdfFileUtils class provides methods for generating and saving PDF files for bank transactions and account
- * statements.
- */
+
 package by.clevertec.bank.util;
 
 import by.clevertec.bank.model.domain.AccountTransaction;
+import by.clevertec.bank.model.dto.AccountDto;
 import by.clevertec.bank.model.dto.AccountExtractDto;
+import by.clevertec.bank.model.dto.AccountStatementDto;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -30,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -38,8 +25,12 @@ public final class PdfFileUtils {
     private static final String CHECK_PATH = "check";
     private static final String ACCOUNT_EXTRACT_PATH = "bank-extract";
 
+    private static final String ACCOUNT_STATEMENT_PATH = "statement-money";
+
     private static final String CHECK_PATH_PATTERN = CHECK_PATH + "/check_#-%d.pdf";
     private static final String ACCOUNT_EXTRACT_PATTERN = ACCOUNT_EXTRACT_PATH + "/%s-extract-%s-%s.pdf";
+    private static final String ACCOUNT_STATEMENT_PATTERN = ACCOUNT_STATEMENT_PATH +
+            "/%s-" + ACCOUNT_STATEMENT_PATH + "-%s-%s.pdf";
 
 
     private PdfFileUtils() {
@@ -107,6 +98,39 @@ public final class PdfFileUtils {
 
     }
 
+    private static PdfPTable createAccountInfoTable(String header, AccountDto account,
+                                                    LocalDate from, LocalDate to, BigDecimal balance) {
+        PdfPTable table = new PdfPTable(2);
+        setHeader(header, table);
+        PdfPCell bankCell = new PdfPCell();
+        bankCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        bankCell.setColspan(2);
+        bankCell.setPhrase(new Phrase(account.getBank().getName()));
+        table.addCell(bankCell);
+
+        table.addCell("Client");
+        table.addCell(account.getOwner().getFullName());
+
+        table.addCell("Account");
+        table.addCell(account.getAccount());
+
+        table.addCell("Currency");
+        table.addCell("BYN");
+
+        table.addCell("Open date");
+        table.addCell(account.getOpenDate().toString());
+
+        table.addCell("Period");
+        table.addCell("%s - %s".formatted(from.toString(), to.toString()));
+
+        table.addCell("Report date");
+        table.addCell(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH.mm")));
+
+        table.addCell("Account balance");
+        table.addCell("%s BYN".formatted(balance.toString()));
+        return table;
+    }
+
 
     public static void saveAccountExtract(AccountExtractDto statementDto) {
         File directory = new File(ACCOUNT_EXTRACT_PATH);
@@ -122,38 +146,10 @@ public final class PdfFileUtils {
                             statementDto.getTo().toString()
                     )));
             document.open();
-            PdfPTable table = new PdfPTable(2);
-            setHeader("Account extract", table);
-            PdfPCell bankCell = new PdfPCell();
 
-            bankCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            bankCell.setColspan(2);
-            bankCell.setPhrase(new Phrase(statementDto.getAccount().getBank().getName()));
-            table.addCell(bankCell);
-
-            table.addCell("Client");
-            table.addCell(statementDto.getAccount().getOwner().getFullName());
-
-            table.addCell("Account");
-            table.addCell(statementDto.getAccount().getAccount());
-
-            table.addCell("Currency");
-            table.addCell("BYN");
-
-            table.addCell("Open date");
-            table.addCell(statementDto.getAccount().getOpenDate().toString());
-
-            table.addCell("Period");
-            table.addCell("%s - %s".formatted(statementDto.getFrom().toString(), statementDto.getTo().toString()));
-
-            table.addCell("Report date");
-            table.addCell(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH.mm")));
-
-            table.addCell("Account balance");
-            table.addCell("%s BYN".formatted(statementDto.getBalance().toString()));
+            PdfPTable table = createAccountInfoTable("Account extract", statementDto.getAccount(),
+                    statementDto.getFrom(), statementDto.getTo(), statementDto.getBalance());
             document.add(table);
-
-
 
             PdfPTable subTable = new PdfPTable(3);
             subTable.setPaddingTop(40.f);
@@ -202,4 +198,37 @@ public final class PdfFileUtils {
 
     }
 
+    public static void saveAccountStatement(AccountStatementDto statementDto) {
+        File directory = new File(ACCOUNT_STATEMENT_PATH);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(ACCOUNT_STATEMENT_PATTERN
+                    .formatted(statementDto.getAccount().getId(),
+                            statementDto.getFrom().toString(),
+                            statementDto.getTo().toString()
+                    )));
+            document.open();
+            PdfPTable table = createAccountInfoTable("Money statement", statementDto.getAccount(),
+                    statementDto.getFrom(), statementDto.getTo(), statementDto.getMoney().getBalance());
+            document.add(table);
+
+            PdfPTable subTable = new PdfPTable(2);
+            subTable.setWidthPercentage(50f);
+            subTable.setPaddingTop(40.f);
+            subTable.addCell(getCenteredCell("Income"));
+            subTable.addCell(getCenteredCell("Expenditure"));
+            subTable.addCell(getCenteredCell("%s BYN".formatted(statementDto.getMoney().getIncome().toString())));
+            subTable.addCell(getCenteredCell("%s BYN".formatted(statementDto.getMoney().getExpenditure().toString())));
+            document.add(subTable);
+
+        } catch (DocumentException | FileNotFoundException e) {
+            logger.error("Can not save account statement file", e);
+        } finally {
+            document.close();
+        }
+    }
 }

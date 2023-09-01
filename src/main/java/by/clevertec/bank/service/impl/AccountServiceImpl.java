@@ -9,6 +9,7 @@ import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
 import by.clevertec.bank.model.dto.AccountDto;
 import by.clevertec.bank.model.dto.AccountExtractDto;
+import by.clevertec.bank.model.dto.AccountStatementDto;
 import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.util.DataMapper;
@@ -52,7 +53,6 @@ public class AccountServiceImpl implements AccountService {
                             .to(a).build());
                 }
                 accountDao.updateLastAccrualDate(a);
-
             }
             transaction.commit();
         } catch (DaoException e) {
@@ -77,21 +77,44 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountExtractDto getAccountExtract(AccountExtractDto statementDto) throws ServiceException {
+    public AccountExtractDto getAccountExtract(AccountExtractDto extractDto) throws ServiceException {
         EntityTransaction transaction = new EntityTransaction();
         try (transaction) {
             AccountDaoImpl accountDao = new AccountDaoImpl();
             AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
             transaction.initialize(accountDao, transactionDaoIml);
-            Account account = accountDao.findById(statementDto.getAccount().getId())
+            Long id = extractDto.getAccount().getId();
+            Account account = accountDao.findById(id)
+                    .orElseThrow(() -> new ServiceException("Account is not found"));
+            AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
+            extractDto.setAccount(accountDto);
+            extractDto.setBalance(accountDao.sumAllByAccountId(id));
+            extractDto.setTransactions(transactionDaoIml.findAllByIdAndBetweenDates(id,
+                            extractDto.getFrom(), extractDto.getTo())
+                    .stream().map(v -> DataMapper.getModelMapper().map(v, TransactionDto.class)).toList());
+            PdfFileUtils.saveAccountExtract(extractDto);
+            return extractDto;
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public AccountStatementDto getAccountStatement(AccountStatementDto statementDto) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
+            transaction.initialize(accountDao, transactionDaoIml);
+            Long id = statementDto.getAccount().getId();
+            Account account = accountDao.findById(id)
                     .orElseThrow(() -> new ServiceException("Account is not found"));
             AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
             statementDto.setAccount(accountDto);
-            statementDto.setBalance(accountDao.sumAllByAccountId(statementDto.getAccount().getId()));
-            statementDto.setTransactions(transactionDaoIml.findAllByIdAndBetweenDates(statementDto.getAccount().getId(),
-                            statementDto.getFrom(), statementDto.getTo())
-                    .stream().map(v -> DataMapper.getModelMapper().map(v, TransactionDto.class)).toList());
-            PdfFileUtils.saveAccountExtract(statementDto);
+            statementDto.setMoney(accountDao.calculateMoneyDataAllByIdAndBetweenDates(id,
+                    statementDto.getFrom(), statementDto.getTo()));
+            PdfFileUtils.saveAccountStatement(statementDto);
             return statementDto;
         } catch (DaoException e) {
             logger.error(e);

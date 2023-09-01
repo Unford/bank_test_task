@@ -1,3 +1,4 @@
+
 package by.clevertec.bank.dao.impl;
 
 import by.clevertec.bank.dao.AbstractDao;
@@ -7,6 +8,7 @@ import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.Bank;
 import by.clevertec.bank.model.domain.User;
+import by.clevertec.bank.model.dto.MoneyStatsDto;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -19,7 +21,7 @@ import java.util.Optional;
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
 
-    private static final String SUM_BY_ID = """
+    private static final String SUM_BY_ID_QUERY = """
             SELECT SUM( CASE
                             WHEN owner_accounts_id = ? THEN sum
                             WHEN sender_account_id = ? THEN -sum
@@ -29,6 +31,29 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             FROM accounts_transactions
             WHERE owner_accounts_id = ? OR sender_account_id = ?;
             """;
+    private static final String SUM_INCOME_EXPENDITURE_BY_ID_BETWEEN_DATES = """
+            SELECT SUM( CASE
+                            WHEN owner_accounts_id = ? THEN sum
+                            WHEN sender_account_id = ? THEN -sum
+                            ELSE 0
+                        END
+                       ) AS total_balance,
+                   SUM( CASE
+                            WHEN owner_accounts_id = ? AND sum > 0 THEN sum
+                            ELSE 0
+                       END
+                       ) AS income,
+                   SUM( CASE
+                            WHEN sender_account_id = ? THEN -sum
+                            WHEN sum < 0 THEN sum
+                            ELSE 0
+                       END
+                       ) AS expenditure
+            FROM accounts_transactions
+            WHERE (owner_accounts_id = ? OR sender_account_id = ?)
+              AND date BETWEEN  ? AND ?;
+            """;
+
     private static final String FIND_ALL_ACCRUAL_QUERY = "SELECT * FROM bank_accounts WHERE (last_accrual_date < CURRENT_DATE)" +
             " AND EXTRACT(MONTH FROM last_accrual_date) < EXTRACT(MONTH FROM CURRENT_DATE)";
     private static final String UPDATE_ACCRUAL_DATE_QUERY = "UPDATE bank_accounts SET last_accrual_date = ?" +
@@ -141,7 +166,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     @Override
     public BigDecimal sumAllByAccountId(Long id) throws DaoException {
         BigDecimal sum = BigDecimal.ZERO;
-        try (PreparedStatement statement = connection.prepareStatement(SUM_BY_ID)) {
+        try (PreparedStatement statement = connection.prepareStatement(SUM_BY_ID_QUERY)) {
             statement.setLong(1, id);
             statement.setLong(2, id);
             statement.setLong(3, id);
@@ -189,5 +214,35 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             throw new DaoException("Update account accrual date error", e);
         }
         return account;
+    }
+
+    @Override
+    public MoneyStatsDto calculateMoneyDataAllByIdAndBetweenDates(Long id, LocalDate from, LocalDate to) throws DaoException {
+        MoneyStatsDto stats = new MoneyStatsDto();
+        try (PreparedStatement statement = connection.prepareStatement(SUM_INCOME_EXPENDITURE_BY_ID_BETWEEN_DATES)) {
+            statement.setLong(1, id);
+            statement.setLong(2, id);
+            statement.setLong(3, id);
+            statement.setLong(4, id);
+            statement.setLong(5, id);
+            statement.setLong(6, id);
+            statement.setDate(7, Date.valueOf(from));
+            statement.setDate(8, Date.valueOf(to.plusDays(1)));
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    stats.setBalance(Optional.ofNullable(resultSet.getBigDecimal(1))
+                            .orElse(BigDecimal.ZERO));
+                    stats.setIncome(Optional.ofNullable(resultSet.getBigDecimal(2))
+                            .orElse(BigDecimal.ZERO));
+                    stats.setExpenditure(Optional.ofNullable(resultSet.getBigDecimal(3))
+                            .orElse(BigDecimal.ZERO));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Sum All,income and expenditures by id between dates query error");
+            throw new DaoException("Sum All,income and expenditures by id between dates query error", e);
+        }
+        return stats;
     }
 }

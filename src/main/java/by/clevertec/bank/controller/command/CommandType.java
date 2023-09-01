@@ -19,7 +19,8 @@ public enum CommandType {
     GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand(), TRANSACTION, GET),
     GET_ACCOUNT_BALANCE(new GetAccountBalanceCommand(), ACCOUNT, GET),
     GET_ACCOUNT_BY_ID(new GetAccountByIdCommand(), ACCOUNT, GET),
-    GET_ACCOUNT_STATEMENT(new GetAccountExtract(), ACCOUNT, GET),
+    GET_ACCOUNT_EXTRACT(new GetAccountExtract(), ACCOUNT, GET),
+    GET_ACCOUNT_STATEMENT(new GetAccountStatement(), ACCOUNT, GET),
     GET_ALL_ACCOUNTS(new GetAllAccountsCommand(), ACCOUNT, GET);
 
 
