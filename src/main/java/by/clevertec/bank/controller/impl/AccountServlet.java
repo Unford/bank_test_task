@@ -16,18 +16,8 @@ import java.io.IOException;
 public class AccountServlet extends AbstractHttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String id = req.getParameter(RequestParameter.ID);
-        Command command;
-        if (id != null) {
-            String comStr = req.getParameter(RequestParameter.COMMAND);
-            if (CommandType.defineCommand(comStr, req.getServletPath())
-                    .equals(CommandType.GET_ACCOUNT_BALANCE.getCommand())) {
-                command = CommandType.GET_ACCOUNT_BALANCE.getCommand();
-            }else {
-                command = CommandType.GET_ACCOUNT_BY_ID.getCommand();
-
-            }
-        } else {
+        Command command = CommandType.defineCommand(req.getParameter(RequestParameter.COMMAND), req);
+        if (command.equals(CommandType.DEFAULT_COMMAND.getCommand())) {
             command = CommandType.GET_ALL_ACCOUNTS.getCommand();
         }
         processCommand(command, req, resp);

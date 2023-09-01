@@ -8,8 +8,12 @@ services:
     networks:
       - postgres
     volumes:
-      - ./logs:/usr/local/tomcat/logs
-      - ./check:/usr/local/tomcat/check
+      - ./data/logs:/usr/local/tomcat/logs
+      - ./data/check:/usr/local/tomcat/check
+      - ./data/statement-money:/usr/local/tomcat/statement-money
+      - ./data/bank-extract:/usr/local/tomcat/bank-extract
+
+
     restart: unless-stopped
     depends_on:
       - bd

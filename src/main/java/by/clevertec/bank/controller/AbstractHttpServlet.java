@@ -42,7 +42,7 @@ public abstract class AbstractHttpServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req,
                           HttpServletResponse resp) throws ServletException, IOException {
         String parameter = req.getParameter(RequestParameter.COMMAND);
-        Command command = CommandType.defineCommand(parameter, req.getServletPath());
+        Command command = CommandType.defineCommand(parameter, req);
         processCommand(command, req, resp);
     }
 }

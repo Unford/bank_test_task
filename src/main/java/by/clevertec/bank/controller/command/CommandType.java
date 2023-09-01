@@ -1,44 +1,51 @@
 package by.clevertec.bank.controller.command;
 
-import by.clevertec.bank.controller.ServletPath;
 import by.clevertec.bank.controller.command.impl.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import static by.clevertec.bank.controller.HttpMethod.*;
+import static by.clevertec.bank.controller.ServletPath.*;
+
 public enum CommandType {
-    DEPOSIT(new DepositCommand(), ServletPath.TRANSACTION),
-    WITHDRAWAL(new WithdrawalCommand(), ServletPath.TRANSACTION),
-    TRANSFER(new TransferCommand(), ServletPath.TRANSACTION),
+    DEPOSIT(new DepositCommand(), TRANSACTION, POST),
+    WITHDRAWAL(new WithdrawalCommand(), TRANSACTION, POST),
+    TRANSFER(new TransferCommand(), TRANSACTION, POST),
 
 
-    GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand()),
+    GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand(), TRANSACTION, GET),
     DEFAULT_COMMAND(new DefaultCommand()),
-    GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand()),
-    GET_ACCOUNT_BALANCE(new GetAccountBalanceCommand(), ServletPath.ACCOUNT),
-    GET_ACCOUNT_BY_ID(new GetAccountByIdCommand(), ServletPath.ACCOUNT),
-    GET_ALL_ACCOUNTS(new GetAllAccountsCommand(),ServletPath.ACCOUNT );
+    GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand(), TRANSACTION, GET),
+    GET_ACCOUNT_BALANCE(new GetAccountBalanceCommand(), ACCOUNT, GET),
+    GET_ACCOUNT_BY_ID(new GetAccountByIdCommand(), ACCOUNT, GET),
+    GET_ACCOUNT_STATEMENT(new GetAccountExtract(), ACCOUNT, GET),
+    GET_ALL_ACCOUNTS(new GetAllAccountsCommand(), ACCOUNT, GET);
 
 
     private static final Logger logger = LogManager.getLogger();
     private final Command command;
     private final String path;
 
-    CommandType(Command command, String path) {
+    private final String method;
+
+    CommandType(Command command, String path, String method) {
         this.command = command;
         this.path = path;
+        this.method = method;
     }
 
     CommandType(Command command) {
-        this.command = command;
-        this.path = "";
+        this(command, "", "");
     }
 
-    public static Command defineCommand(String parameter, String servletPath) {
+    public static Command defineCommand(String parameter, HttpServletRequest req) {
         CommandType commandType = CommandType.DEFAULT_COMMAND;
         try {
             if (parameter != null) {
                 commandType = CommandType.valueOf(parameter.toUpperCase());
-                if (!commandType.getPath().equals(servletPath)) {
+                if (!commandType.getPath().equals(req.getServletPath()) ||
+                        !commandType.getMethod().equals(req.getMethod())) {
                     commandType = CommandType.DEFAULT_COMMAND;
                 }
             }
@@ -47,7 +54,7 @@ public enum CommandType {
         } catch (IllegalArgumentException e) {
             logger.error("Unknown command {}", parameter, e);
         }
-        logger.debug("Command - {}, {}", commandType, servletPath);
+        logger.debug("Command - {}, {}, {}", commandType, req.getServletPath(), req.getMethod());
         return commandType.getCommand();
 
     }
@@ -60,4 +67,7 @@ public enum CommandType {
         return path;
     }
 
+    public String getMethod() {
+        return method;
+    }
 }

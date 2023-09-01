@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public final class AccountTransactionServiceImpl implements AccountTransactionService {
     private static final Logger logger = LogManager.getLogger();
@@ -154,7 +155,9 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
             AccountTransactionDaoIml accountTransactionDao = new AccountTransactionDaoIml();
             transaction.initialize(accountTransactionDao);
             ModelMapper modelMapper = DataMapper.getModelMapper();
-            return modelMapper.map(accountTransactionDao.findById(id), TransactionDto.class);
+            Optional<AccountTransaction> transactionOptional = accountTransactionDao.findById(id);
+            return modelMapper.map(transactionOptional
+                    .orElseThrow(()->new ServiceException("Transaction is not found")), TransactionDto.class);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);

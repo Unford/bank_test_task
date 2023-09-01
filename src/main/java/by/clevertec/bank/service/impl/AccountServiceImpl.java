@@ -8,8 +8,11 @@ import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
 import by.clevertec.bank.model.dto.AccountDto;
+import by.clevertec.bank.model.dto.AccountExtractDto;
+import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.util.DataMapper;
+import by.clevertec.bank.util.PdfFileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -60,12 +63,36 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public BigDecimal getAccountSum(long id) throws ServiceException {
+    public BigDecimal getAccountBalance(long id) throws ServiceException {
         EntityTransaction transaction = new EntityTransaction();
         try (transaction) {
             AccountDaoImpl accountDao = new AccountDaoImpl();
             transaction.initialize(accountDao);
+            accountDao.findById(id).orElseThrow(() -> new ServiceException("Account is not found"));
             return accountDao.sumAllByAccountId(id);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public AccountExtractDto getAccountExtract(AccountExtractDto statementDto) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
+            transaction.initialize(accountDao, transactionDaoIml);
+            Account account = accountDao.findById(statementDto.getAccount().getId())
+                    .orElseThrow(() -> new ServiceException("Account is not found"));
+            AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
+            statementDto.setAccount(accountDto);
+            statementDto.setBalance(accountDao.sumAllByAccountId(statementDto.getAccount().getId()));
+            statementDto.setTransactions(transactionDaoIml.findAllByIdAndBetweenDates(statementDto.getAccount().getId(),
+                            statementDto.getFrom(), statementDto.getTo())
+                    .stream().map(v -> DataMapper.getModelMapper().map(v, TransactionDto.class)).toList());
+            PdfFileUtils.saveAccountExtract(statementDto);
+            return statementDto;
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);
@@ -94,7 +121,8 @@ public class AccountServiceImpl implements AccountService {
             AccountDaoImpl accountDao = new AccountDaoImpl();
             transaction.initialize(accountDao);
             ModelMapper modelMapper = DataMapper.getModelMapper();
-            return modelMapper.map(accountDao.findById(id), AccountDto.class);
+            return modelMapper.map(accountDao.findById(id)
+                    .orElseThrow(() -> new ServiceException("Account is not found")), AccountDto.class);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);

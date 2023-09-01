@@ -33,7 +33,14 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             " AND EXTRACT(MONTH FROM last_accrual_date) < EXTRACT(MONTH FROM CURRENT_DATE)";
     private static final String UPDATE_ACCRUAL_DATE_QUERY = "UPDATE bank_accounts SET last_accrual_date = ?" +
             " WHERE bank_account_id = ?;";
-    private static final String FIND_BY_ID_QUERY = "SELECT * from bank_accounts where bank_account_id = ?";
+    private static final String FIND_BY_ID_QUERY = """
+            SELECT ba.*, b.name as name,
+            u.full_name as full_name
+            from bank_accounts ba
+            join banks b on b.bank_id = ba.bank_id
+            join users u on u.user_id = ba.user_id
+            where bank_account_id = ?""";
+
     private static final String FIND_ALL_QUERY = "SELECT * FROM bank_accounts";
 
 
@@ -62,7 +69,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             statement.setLong(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    account = Optional.ofNullable(mapEntity(resultSet));
+                    account = Optional.ofNullable(mapFullEntity(resultSet));
                 }
             }
         } catch (SQLException e) {
@@ -97,6 +104,28 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
                     .openDate(resultSet.getDate(ColumnName.Account.OPEN_DATE).toLocalDate())
                     .bank(Bank.builder().id(resultSet.getLong(ColumnName.Account.BANK_ID)).build())
                     .owner(User.builder().id(resultSet.getLong(ColumnName.Account.USER_ID)).build())
+                    .build();
+        } catch (SQLException e) {
+            logger.error("mapping account error");
+            throw e;
+        }
+    }
+
+
+    private Account mapFullEntity(ResultSet resultSet) throws SQLException {
+        try {
+            return Account.builder()
+                    .id(resultSet.getLong(ColumnName.Account.ACCOUNT_ID))
+                    .account(resultSet.getString(ColumnName.Account.ACCOUNT_NUM))
+                    .lastAccrualDate(resultSet.getDate(ColumnName.Account.LAST_ACCRUAL_DATE).toLocalDate())
+                    .openDate(resultSet.getDate(ColumnName.Account.OPEN_DATE).toLocalDate())
+                    .bank(Bank.builder()
+                            .id(resultSet.getLong(ColumnName.Account.BANK_ID))
+                            .name(resultSet.getString(ColumnName.Bank.BANK_NAME))
+                            .build())
+                    .owner(User.builder()
+                            .id(resultSet.getLong(ColumnName.Account.USER_ID))
+                            .fullName(resultSet.getString(ColumnName.User.FULL_NAME)).build())
                     .build();
         } catch (SQLException e) {
             logger.error("mapping account error");
@@ -150,7 +179,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     public Account updateLastAccrualDate(Account account) throws DaoException {
         try (PreparedStatement statement = connection.prepareStatement(UPDATE_ACCRUAL_DATE_QUERY)) {
             LocalDate now = LocalDate.now();
-            logger.debug("Update account {} accrual date {}", account.getId(),now);
+            logger.debug("Update account {} accrual date {}", account.getId(), now);
             statement.setDate(1, Date.valueOf(now));
             statement.setLong(2, account.getId());
             statement.executeUpdate();

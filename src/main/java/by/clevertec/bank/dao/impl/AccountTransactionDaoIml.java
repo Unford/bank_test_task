@@ -10,6 +10,7 @@ import by.clevertec.bank.model.domain.User;
 import by.clevertec.bank.model.domain.Bank;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,10 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
                      LEFT JOIN users u_sender ON u_sender.user_id = ba_sender.user_id
                      LEFT JOIN users u_owner ON u_owner.user_id = ba_owner.user_id
             WHERE account_transaction_id = ?;""";
+    private static final String FIND_ALL_BY_ACCOUNT_ID_AND_DATES_QUERY = FIND_ALL_QUERY +
+            " where (owner_accounts_id = ? OR sender_account_id = ?) AND date BETWEEN ? AND ?";
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM accounts_transactions " +
+            "WHERE account_transaction_id = ?";
 
 
     @Override
@@ -101,12 +106,20 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
 
     @Override
     public AccountTransaction update(AccountTransaction entity) throws DaoException {
-        return null;
+        throw new UnsupportedOperationException("Update query is forbidden for account transaction dao");
     }
 
     @Override
     public boolean deleteById(long id) throws DaoException {
-        return false;
+        int res;
+        try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_QUERY)) {
+            statement.setLong(1, id);
+            res = statement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Delete transaction query error", e);
+            throw new DaoException("Delete transaction query error", e);
+        }
+        return res > 0;
     }
 
 
@@ -186,6 +199,28 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
         } catch (SQLException e) {
             logger.error("Find All ingredients by account query error");
             throw new DaoException("Find All ingredients by account query error", e);
+        }
+        return list;
+    }
+
+    @Override
+    public List<AccountTransaction> findAllByIdAndBetweenDates(long id, LocalDate from, LocalDate to) throws DaoException{
+        List<AccountTransaction> list = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(FIND_ALL_BY_ACCOUNT_ID_AND_DATES_QUERY)) {
+            statement.setLong(1, id);
+            statement.setLong(2, id);
+            statement.setDate(3, Date.valueOf(from));
+            statement.setDate(4, Date.valueOf(to.plusDays(1)));
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    AccountTransaction v = mapEntity(resultSet);
+                    list.add(v);
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Find All transactions by account id and between dates query error");
+            throw new DaoException("Find All transactions by account id and between dates query error", e);
         }
         return list;
     }

@@ -7,6 +7,9 @@ public final class RequestParameter {
     public static final String ID = "id";
     public static final String ACCOUNT = "account";
 
+    public static final String DATE_FROM = "from";
+    public static final String DATE_TO = "to";
+
 
 
 }
