@@ -17,6 +17,10 @@ import static by.clevertec.bank.controller.HttpMethod.*;
 import static by.clevertec.bank.controller.ServletPath.ACCOUNT;
 import static by.clevertec.bank.controller.ServletPath.TRANSACTION;
 
+/**
+ * The `CommandType` enum is used to define and manage different types of commands in a banking application. Each command
+ * is associated with a specific path and HTTP method.
+ */
 public enum CommandType {
     DEFAULT_COMMAND(new DefaultCommand()),
 
@@ -38,6 +42,10 @@ public enum CommandType {
     UPDATE_ACCOUNT_BY_ID(new UpdateAccountCommand(),ACCOUNT , PUT);
 
 
+    /**
+     *  command type
+     *
+     */
     private static final Logger logger = LogManager.getLogger();
     private final Command command;
     private final String path;

@@ -8,6 +8,10 @@ import org.modelmapper.convention.MatchingStrategies;
 
 import java.text.SimpleDateFormat;
 
+/**
+ * The DataMapper class provides static methods to access and configure ObjectMapper and ModelMapper objects for data
+ * mapping and serialization/deserialization operations in Java.
+ */
 public final class DataMapper {
     private DataMapper() {
     }
@@ -31,10 +35,20 @@ public final class DataMapper {
     }
 
 
+    /**
+     * The function returns an instance of the ObjectMapper class.
+     *
+     * @return The method is returning an instance of the ObjectMapper class.
+     */
     public static ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 
+    /**
+     * The function returns an instance of the ModelMapper class.
+     *
+     * @return The method is returning an instance of the ModelMapper class.
+     */
     public static ModelMapper getModelMapper() {
         return modelMapper;
     }

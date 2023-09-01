@@ -8,6 +8,9 @@ import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * The GetAccountByIdCommand class is a Java class that retrieves an account by its ID and returns it.
+ */
 public class GetAccountByIdCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

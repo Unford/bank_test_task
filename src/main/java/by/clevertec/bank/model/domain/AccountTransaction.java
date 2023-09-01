@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * The `AccountTransaction` class represents a transaction between two accounts, including the sum, date and time, and the
+ * accounts involved.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor

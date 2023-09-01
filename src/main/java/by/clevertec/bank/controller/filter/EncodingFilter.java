@@ -5,6 +5,10 @@ import jakarta.servlet.annotation.WebFilter;
 
 import java.io.IOException;
 
+/**
+ * The EncodingFilter class is a Java filter that sets the character encoding and content type for incoming and outgoing
+ * requests.
+ */
 @WebFilter(urlPatterns = {"/*"})
 public class EncodingFilter implements Filter {
     private static final String ENCODING = "UTF-8";

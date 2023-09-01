@@ -6,6 +6,7 @@ import by.clevertec.bank.dao.impl.AccountTransactionDaoIml;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.domain.AccountTransaction;
+import by.clevertec.bank.model.dto.CustomError;
 import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.AccountTransactionService;
 import by.clevertec.bank.util.DataMapper;
@@ -44,7 +45,7 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
                 PdfFileUtils.saveCheck(createdDeposit);
                 return DataMapper.getModelMapper().map(createdDeposit, TransactionDto.class);
             } else {
-                throw new ServiceException("Account not found!");
+                throw new ServiceException("Account not found!", CustomError.NOT_FOUND);
             }
 
         } catch (DaoException e) {
@@ -70,10 +71,10 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
                     PdfFileUtils.saveCheck(createdWithdrawal);
                     return DataMapper.getModelMapper().map(createdWithdrawal, TransactionDto.class);
                 } else {
-                    throw new ServiceException("Not enough money to withdrawal");
+                    throw new ServiceException("Not enough money to withdrawal!", CustomError.CONFLICT);
                 }
             } else {
-                throw new ServiceException("Account not Found = " + transactionDto.getTo().getId());
+                throw new ServiceException("Account not Found!", CustomError.NOT_FOUND);
             }
 
 
@@ -99,13 +100,13 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
                         PdfFileUtils.saveCheck(createdTransfer);
                         return DataMapper.getModelMapper().map(createdTransfer, TransactionDto.class);
                     } else {
-                        throw new ServiceException("Not enough money to transfer!");
+                        throw new ServiceException("Not enough money to transfer!", CustomError.CONFLICT);
                     }
                 } else {
-                    throw new ServiceException("To account not Found = " + transactionDto.getTo().getId());
+                    throw new ServiceException("To account not Found!", CustomError.NOT_FOUND);
                 }
             } else {
-                throw new ServiceException("From account not Found = " + transactionDto.getFrom().getId());
+                throw new ServiceException("From account not Found!", CustomError.NOT_FOUND);
             }
 
 
@@ -157,7 +158,8 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
             ModelMapper modelMapper = DataMapper.getModelMapper();
             Optional<AccountTransaction> transactionOptional = accountTransactionDao.findById(id);
             return modelMapper.map(transactionOptional
-                    .orElseThrow(() -> new ServiceException("Transaction is not found")), TransactionDto.class);
+                    .orElseThrow(() -> new ServiceException("Transaction is not found", CustomError.NOT_FOUND)),
+                    TransactionDto.class);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);
@@ -170,7 +172,8 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
         try (transaction) {
             AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
             transaction.initialize(transactionDaoIml);
-            transactionDaoIml.findById(id).orElseThrow(() -> new ServiceException("Transaction is not found"));
+            transactionDaoIml.findById(id)
+                    .orElseThrow(() -> new ServiceException("Transaction is not found", CustomError.NOT_FOUND));
             return transactionDaoIml.deleteById(id);
         } catch (DaoException e) {
             logger.error(e);

@@ -13,6 +13,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * The class AccountExtractDto is a data transfer object that represents an account extract, including account details,
+ * balance, date range, and a list of transactions.
+ */
 @Data
 @Builder
 @Jacksonized

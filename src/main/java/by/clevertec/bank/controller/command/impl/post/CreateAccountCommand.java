@@ -8,6 +8,11 @@ import by.clevertec.bank.model.validation.CreateValidationGroup;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * The CreateAccountCommand class is responsible for executing the create account command by reading the request body,
+ * validating the account data, and calling the create method of the AccountServiceImpl class.
+ */
+
 public class CreateAccountCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

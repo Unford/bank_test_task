@@ -11,6 +11,9 @@ import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * The ConnectionPool class is a singleton class that provides a connection pool for accessing a database using HikariCP.
+ */
 public final class ConnectionPool {
     private static final Logger logger = LogManager.getLogger();
 
@@ -25,6 +28,12 @@ public final class ConnectionPool {
     private ConnectionPool() {
     }
 
+    /**
+     * The getInstance() function returns a HikariDataSource instance, initializing it if it hasn't been initialized
+     * already.
+     *
+     * @return The method is returning an instance of the HikariDataSource class.
+     */
     public static HikariDataSource getInstance() {
         if (!initCheck.get()) {
             try {
@@ -49,6 +58,9 @@ public final class ConnectionPool {
         return dataSource;
     }
 
+    /**
+     * The close() function closes the dataSource and deregisters all drivers.
+     */
     public static void close() {
         if (dataSource != null) {
             dataSource.close();

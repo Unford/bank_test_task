@@ -5,7 +5,6 @@ import by.clevertec.bank.dao.ConnectionPool;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
-import by.clevertec.bank.util.PdfFileUtils;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -16,9 +15,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The ServletContextListenerImpl class is a Java class that implements the ServletContextListener interface and is
+ * responsible for initializing and destroying the servlet context, as well as scheduling and running an accrual task at a
+ * fixed rate.
+ */
 @WebListener
 public class ServletContextListenerImpl implements ServletContextListener {
     private static final Logger logger = LogManager.getLogger();
+
     private ScheduledExecutorService scheduledExecutorService;
 
     @Override
@@ -38,6 +43,10 @@ public class ServletContextListenerImpl implements ServletContextListener {
         ConnectionPool.close();
     }
 
+    /**
+     * The AccrualTask class is a Runnable implementation that performs an accrual task by calling the accrueIncome method
+     * of the AccountService.
+     */
     private static class AccrualTask implements Runnable {
         private static final Logger logger = LogManager.getLogger();
 

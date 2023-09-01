@@ -9,6 +9,10 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * The UserDto class is a data transfer object that represents a user with an ID and a full name, and includes annotations
+ * for validation and serialization.
+ */
 @Data
 @Builder
 @Jacksonized

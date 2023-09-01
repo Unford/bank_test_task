@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * The `Account` class represents a bank account and extends an abstract DAO entity class.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor

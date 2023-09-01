@@ -7,6 +7,9 @@ import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * The WithdrawalCommand class is responsible for executing a withdrawal transaction on an account.
+ */
 public class WithdrawalCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

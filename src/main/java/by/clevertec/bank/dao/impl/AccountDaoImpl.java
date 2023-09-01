@@ -18,6 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 
+
+// The above code is implementing the AccountDao interface and providing the implementation for various methods such as
+// findAll, findById, create, update, deleteById, sumAllByAccountId, findAllAccrual, updateLastAccrualDate,
+// calculateMoneyDataAllByIdAndBetweenDates, and findByAccountOrBankAndUser. These methods perform database operations
+// related to managing bank accounts, such as retrieving all accounts, finding an account by its ID, creating a new
+// account, updating an existing account, deleting an account, calculating the sum of balances for a given account ID,
+// finding all accounts that need accrual,
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
 

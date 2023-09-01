@@ -20,6 +20,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * The PdfFileUtils class provides methods for saving different types of PDF files related to bank transactions.
+ */
 public final class PdfFileUtils {
     private static final Logger logger = LogManager.getLogger();
     private static final String CHECK_PATH = "check";
@@ -51,6 +54,12 @@ public final class PdfFileUtils {
     }
 
 
+    /**
+     * The function saves an account transaction as a PDF check file.
+     *
+     * @param transaction The "transaction" parameter is an instance of the "AccountTransaction" class. It represents a
+     * transaction made between two bank accounts.
+     */
     public static void saveCheck(AccountTransaction transaction) {
         File directory = new File(CHECK_PATH);
         if (!directory.exists()) {
@@ -98,6 +107,7 @@ public final class PdfFileUtils {
 
     }
 
+
     private static PdfPTable createAccountInfoTable(String header, AccountDto account,
                                                     LocalDate from, LocalDate to, BigDecimal balance) {
         PdfPTable table = new PdfPTable(2);
@@ -132,6 +142,13 @@ public final class PdfFileUtils {
     }
 
 
+    /**
+     * The function `saveAccountExtract` saves an account extract as a PDF file, including account information and
+     * transaction details.
+     *
+     * @param statementDto The `statementDto` parameter is an object of type `AccountExtractDto`. It contains information
+     * about the account extract, including the account details, date range, balance, and a list of transactions.
+     */
     public static void saveAccountExtract(AccountExtractDto statementDto) {
         File directory = new File(ACCOUNT_EXTRACT_PATH);
         if (!directory.exists()) {
@@ -198,6 +215,13 @@ public final class PdfFileUtils {
 
     }
 
+    /**
+     * The function `saveAccountStatement` saves an account statement as a PDF file.
+     *
+     * @param statementDto The `statementDto` parameter is an object of type `AccountStatementDto`. It contains information
+     * about the account statement that needs to be saved. The `AccountStatementDto` class likely has properties such as
+     * `account`, `from`, `to`, and `money`, which hold the relevant data for
+     */
     public static void saveAccountStatement(AccountStatementDto statementDto) {
         File directory = new File(ACCOUNT_STATEMENT_PATH);
         if (!directory.exists()) {

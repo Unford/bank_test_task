@@ -7,6 +7,9 @@ import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * The DepositCommand class is responsible for executing a deposit transaction on an account.
+ */
 public class DepositCommand extends Command {
 
     @Override

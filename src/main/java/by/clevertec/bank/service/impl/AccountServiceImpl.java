@@ -7,10 +7,7 @@ import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
-import by.clevertec.bank.model.dto.AccountDto;
-import by.clevertec.bank.model.dto.AccountExtractDto;
-import by.clevertec.bank.model.dto.AccountStatementDto;
-import by.clevertec.bank.model.dto.TransactionDto;
+import by.clevertec.bank.model.dto.*;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.util.DataMapper;
 import by.clevertec.bank.util.PdfFileUtils;
@@ -69,7 +66,8 @@ public class AccountServiceImpl implements AccountService {
         try (transaction) {
             AccountDaoImpl accountDao = new AccountDaoImpl();
             transaction.initialize(accountDao);
-            accountDao.findById(id).orElseThrow(() -> new ServiceException("Account is not found"));
+            accountDao.findById(id).orElseThrow(() ->
+                    new ServiceException("Account is not found", CustomError.NOT_FOUND));
             return accountDao.sumAllByAccountId(id);
         } catch (DaoException e) {
             logger.error(e);
@@ -86,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
             transaction.initialize(accountDao, transactionDaoIml);
             Long id = extractDto.getAccount().getId();
             Account account = accountDao.findById(id)
-                    .orElseThrow(() -> new ServiceException("Account is not found"));
+                    .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
             AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
             extractDto.setAccount(accountDto);
             extractDto.setBalance(accountDao.sumAllByAccountId(id));
@@ -110,7 +108,7 @@ public class AccountServiceImpl implements AccountService {
             transaction.initialize(accountDao, transactionDaoIml);
             Long id = statementDto.getAccount().getId();
             Account account = accountDao.findById(id)
-                    .orElseThrow(() -> new ServiceException("Account is not found"));
+                    .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
             AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
             statementDto.setAccount(accountDto);
             statementDto.setMoney(accountDao.calculateMoneyDataAllByIdAndBetweenDates(id,
@@ -146,7 +144,8 @@ public class AccountServiceImpl implements AccountService {
             transaction.initialize(accountDao);
             ModelMapper modelMapper = DataMapper.getModelMapper();
             return modelMapper.map(accountDao.findById(id)
-                    .orElseThrow(() -> new ServiceException("Account is not found")), AccountDto.class);
+                    .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND)),
+                    AccountDto.class);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);
@@ -160,9 +159,10 @@ public class AccountServiceImpl implements AccountService {
             AccountDaoImpl accountDao = new AccountDaoImpl();
             AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
             transaction.initialize(accountDao, transactionDaoIml);
-            Account account = accountDao.findById(id).orElseThrow(() -> new ServiceException("Account is not found"));
+            Account account = accountDao.findById(id)
+                    .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
             if (!transactionDaoIml.findAllByAccount(account.getAccount()).isEmpty()) {
-                throw new ServiceException("Conflict account has transactions");
+                throw new ServiceException("Conflict account has transactions", CustomError.CONFLICT);
             }
             return accountDao.deleteById(id);
         } catch (DaoException e) {
@@ -179,7 +179,7 @@ public class AccountServiceImpl implements AccountService {
             transaction.initialize(accountDao);
             if (accountDao.findByAccountOrBankAndUser(dto.getAccount(),
                     dto.getBank().getId(), dto.getUser().getId()).isPresent()) {
-                throw new ServiceException("Account already exist!");
+                throw new ServiceException("Account already exist!",  CustomError.CONFLICT);
             } else {
                 Account account = accountDao.create(DataMapper.getModelMapper().map(dto, Account.class));
                 return DataMapper.getModelMapper().map(account, AccountDto.class);
@@ -200,7 +200,7 @@ public class AccountServiceImpl implements AccountService {
             Optional<Account> optionalAccount = accountDao
                     .findByAccountOrBankAndUser(dto.getAccount(), 0, 0);
             if (optionalAccount.isPresent() && !optionalAccount.get().getId().equals(dto.getId())) {
-                throw new ServiceException("Account already exist!");
+                throw new ServiceException("Account already exist!", CustomError.CONFLICT);
             } else {
                 Account account = accountDao.update(DataMapper.getModelMapper().map(dto, Account.class));
                 return DataMapper.getModelMapper().map(account, AccountDto.class);

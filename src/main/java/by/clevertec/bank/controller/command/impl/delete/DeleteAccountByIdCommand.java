@@ -8,6 +8,10 @@ import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * The DeleteAccountByIdCommand class is a Java class that extends the Command class and is responsible for executing a
+ * command to delete an account by its ID.
+ */
 public class DeleteAccountByIdCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

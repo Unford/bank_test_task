@@ -11,6 +11,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * The AccountTransactionServlet class is a Java servlet that handles HTTP requests for retrieving and deleting account
+ * transactions.
+ */
 @WebServlet(name = "transaction", value = "/transactions")
 public class AccountTransactionServlet extends AbstractHttpServlet {
     @Override

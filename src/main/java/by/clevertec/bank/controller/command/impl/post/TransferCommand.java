@@ -11,6 +11,10 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import javax.validation.groups.Default;
 
+/**
+ * The TransferCommand class is a Java class that extends the Command class and is responsible for executing a transfer of
+ * money between two accounts.
+ */
 public class TransferCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

@@ -16,9 +16,23 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * The `AbstractHttpServlet` class is an abstract class that provides a method for processing a command, executing it,
+ * handling exceptions, and writing the result as a JSON string to the response.
+ */
 public abstract class AbstractHttpServlet extends HttpServlet {
     protected static final Logger logger = LogManager.getLogger();
 
+    /**
+     * The function processes a command, executes it, handles any exceptions, and writes the result as a JSON string to the
+     * response.
+     *
+     * @param command The "command" parameter is an object of type Command. It represents the command that needs to be
+     * executed.
+     * @param req HttpServletRequest object, which represents the request made by the client to the server.
+     * @param resp The `resp` parameter is an instance of the `HttpServletResponse` class, which represents the response
+     * that will be sent back to the client. It is used to set the status code of the response and write the response body.
+     */
     protected void processCommand(Command command, HttpServletRequest req,
                                   HttpServletResponse resp) throws IOException {
         Object v;

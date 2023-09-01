@@ -9,9 +9,12 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ * The class AccountStatementDto is a data transfer object that represents an account statement with information about the
+ * account, money statistics, and the date range.
+ */
 @Data
 @Builder
 @Jacksonized

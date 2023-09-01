@@ -7,12 +7,19 @@ import org.apache.logging.log4j.Logger;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * The EntityTransaction class manages database transactions and provides methods for initializing, committing, and rolling
+ * back transactions.
+ */
 public class EntityTransaction implements AutoCloseable {
 
     private static final Logger logger = LogManager.getLogger();
     private Connection connection;
 
 
+    /**
+     * The function initializes a transaction by setting the auto commit to false.
+     */
     public void initializeTransaction(AbstractDao... daos) throws DaoException {
         try {
             this.initialize(daos);
@@ -23,6 +30,9 @@ public class EntityTransaction implements AutoCloseable {
     }
 
 
+    /**
+     * The function initializes a connection to a database and sets the connection for each provided DAO.
+     */
     public void initialize(AbstractDao... daos) throws DaoException {
         if (connection == null) {
             try {
@@ -50,6 +60,9 @@ public class EntityTransaction implements AutoCloseable {
     }
 
 
+    /**
+     * The function commits a transaction and logs an error message if the commit fails.
+     */
     public void commit() {
         try {
             connection.commit();
@@ -59,6 +72,9 @@ public class EntityTransaction implements AutoCloseable {
     }
 
 
+    /**
+     * The function "rollback" attempts to rollback a transaction and logs an error message if it fails.
+     */
     public void rollback() {
         try {
             connection.rollback();

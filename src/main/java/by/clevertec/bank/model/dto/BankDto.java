@@ -9,6 +9,9 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * The BankDto class is a data transfer object that represents a bank and includes an id and name.
+ */
 @Data
 @Builder
 @Jacksonized

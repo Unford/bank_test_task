@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+/**
+ * The User class is a subclass of AbstractDaoEntity and represents a user with a full name.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor

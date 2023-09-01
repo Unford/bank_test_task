@@ -14,6 +14,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
+/**
+ * The AccountDto class is a data transfer object that represents an account, including its ID, account name, open date,
+ * last accrual date, associated bank, and associated user.
+ */
 @Data
 @Builder
 @Jacksonized

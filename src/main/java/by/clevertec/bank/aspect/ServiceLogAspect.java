@@ -14,22 +14,29 @@ public class ServiceLogAspect {
     private static final Logger logger = LogManager.getLogger("ServiceLogger");
 
     @Pointcut("execution(public !static * by.clevertec.bank.service.impl.*.*(..))")
-    public void executeLogging(){}
+    public void executeLogging() {
+    }
 
     @Around("executeLogging()")
     public Object logMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
-        StringBuilder builder = new StringBuilder("Method: ")
+        StringBuilder builder = new StringBuilder()
+                .append("Class: ")
+                .append(joinPoint.getSignature().getDeclaringType().getSimpleName())
+                .append(" - Method: ")
                 .append(joinPoint.getSignature().getName());
 
         Object[] args = joinPoint.getArgs();
         if (args != null && args.length > 0) {
-            builder.append(" args=[ ");
+            builder.append(", args=[ ");
             Arrays.stream(args).forEach(arg -> builder.append(arg).append(" | "));
+            builder.delete(builder.length() - 2, builder.length());
             builder.append("]");
+        }else {
+            builder.append(", no args");
         }
         try {
             Object returnValue = joinPoint.proceed();
-            builder.append(", returning: ").append(returnValue);
+            builder.append(", returned: ").append(returnValue);
 
             logger.info(builder);
             return returnValue;

@@ -13,6 +13,10 @@ import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * The TransactionDto class is a data transfer object that represents a transaction with an ID, sum, source account,
+ * destination account, and date/time.
+ */
 @Data
 @Jacksonized
 @NoArgsConstructor

@@ -14,6 +14,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * The GetAccountStatement class is a Java command that retrieves an account statement based on the provided parameters.
+ */
 public class GetAccountStatement extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

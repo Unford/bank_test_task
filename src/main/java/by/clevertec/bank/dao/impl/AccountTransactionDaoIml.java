@@ -18,6 +18,10 @@ import java.util.Optional;
 
 import static by.clevertec.bank.dao.ColumnName.*;
 
+/**
+ * The `AccountTransactionDaoIml` class is an implementation of the `AccountTransactionDao` interface that provides methods
+ * for CRUD operations on account transactions in a database.
+ */
 public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> implements AccountTransactionDao {
 
     private static final String CREATE_QUERY = "insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)";

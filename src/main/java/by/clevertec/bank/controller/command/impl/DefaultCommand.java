@@ -5,6 +5,10 @@ import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.model.dto.CustomError;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * The DefaultCommand class is a subclass of the Command class that throws a CommandException with a custom error when
+ * executed.
+ */
 public class DefaultCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

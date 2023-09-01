@@ -14,6 +14,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * The GetAccountExtract class is a Java command that retrieves an account extract based on the provided parameters.
+ */
 public class GetAccountExtract extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {

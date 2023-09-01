@@ -1,3 +1,4 @@
+
 package by.clevertec.bank.controller.impl;
 
 
@@ -12,6 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * The AccountServlet class is a Java servlet that handles HTTP requests for account-related operations such as creating,
+ * updating, deleting, and retrieving accounts.
+ */
 @WebServlet(name = "account", value = "/accounts")
 public class AccountServlet extends AbstractHttpServlet {
     @Override
@@ -32,5 +37,10 @@ public class AccountServlet extends AbstractHttpServlet {
         }
         processCommand(command, req, resp);
 
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processCommand(CommandType.CREATE_ACCOUNT.getCommand(), req, resp);
     }
 }

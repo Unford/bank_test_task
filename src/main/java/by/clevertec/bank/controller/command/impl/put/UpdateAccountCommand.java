@@ -10,6 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import javax.validation.groups.Default;
 
+/**
+ * The UpdateAccountCommand class is a Java class that extends the Command class and is responsible for executing the
+ * update operation on an account.
+ */
 public class UpdateAccountCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {
