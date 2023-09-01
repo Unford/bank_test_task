@@ -1,4 +1,4 @@
-package by.clevertec.bank.controller.command.impl;
+package by.clevertec.bank.controller.command.impl.get;
 
 import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;

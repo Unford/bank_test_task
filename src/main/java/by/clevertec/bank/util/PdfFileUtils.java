@@ -109,7 +109,7 @@ public final class PdfFileUtils {
         table.addCell(bankCell);
 
         table.addCell("Client");
-        table.addCell(account.getOwner().getFullName());
+        table.addCell(account.getUser().getFullName());
 
         table.addCell("Account");
         table.addCell(account.getAccount());

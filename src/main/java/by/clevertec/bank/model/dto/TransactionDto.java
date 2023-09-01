@@ -1,7 +1,6 @@
 package by.clevertec.bank.model.dto;
 
-import by.clevertec.bank.util.MoneyTransferGroup;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import by.clevertec.bank.model.validation.TransferValidationGroup;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class TransactionDto {
     @Positive
     private BigDecimal sum;
     @Valid
-    @NotNull(groups = MoneyTransferGroup.class)
+    @NotNull(groups = TransferValidationGroup.class)
     private AccountDto from;
     @NotNull
     @Valid

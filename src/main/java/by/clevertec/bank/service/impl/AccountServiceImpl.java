@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LogManager.getLogger();
@@ -146,6 +147,65 @@ public class AccountServiceImpl implements AccountService {
             ModelMapper modelMapper = DataMapper.getModelMapper();
             return modelMapper.map(accountDao.findById(id)
                     .orElseThrow(() -> new ServiceException("Account is not found")), AccountDto.class);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteById(long id) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
+            transaction.initialize(accountDao, transactionDaoIml);
+            Account account = accountDao.findById(id).orElseThrow(() -> new ServiceException("Account is not found"));
+            if (!transactionDaoIml.findAllByAccount(account.getAccount()).isEmpty()) {
+                throw new ServiceException("Conflict account has transactions");
+            }
+            return accountDao.deleteById(id);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public AccountDto create(AccountDto dto) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            transaction.initialize(accountDao);
+            if (accountDao.findByAccountOrBankAndUser(dto.getAccount(),
+                    dto.getBank().getId(), dto.getUser().getId()).isPresent()) {
+                throw new ServiceException("Account already exist!");
+            } else {
+                Account account = accountDao.create(DataMapper.getModelMapper().map(dto, Account.class));
+                return DataMapper.getModelMapper().map(account, AccountDto.class);
+            }
+
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public AccountDto update(AccountDto dto) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountDaoImpl accountDao = new AccountDaoImpl();
+            transaction.initialize(accountDao);
+            Optional<Account> optionalAccount = accountDao
+                    .findByAccountOrBankAndUser(dto.getAccount(), 0, 0);
+            if (optionalAccount.isPresent() && !optionalAccount.get().getId().equals(dto.getId())) {
+                throw new ServiceException("Account already exist!");
+            } else {
+                Account account = accountDao.update(DataMapper.getModelMapper().map(dto, Account.class));
+                return DataMapper.getModelMapper().map(account, AccountDto.class);
+            }
+
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);

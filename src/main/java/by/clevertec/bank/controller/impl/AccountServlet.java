@@ -15,6 +15,16 @@ import java.io.IOException;
 @WebServlet(name = "account", value = "/accounts")
 public class AccountServlet extends AbstractHttpServlet {
     @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processCommand(CommandType.DELETE_ACCOUNT_BY_ID.getCommand(), req, resp);
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processCommand(CommandType.UPDATE_ACCOUNT_BY_ID.getCommand(), req, resp);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Command command = CommandType.defineCommand(req.getParameter(RequestParameter.COMMAND), req);
         if (command.equals(CommandType.DEFAULT_COMMAND.getCommand())) {

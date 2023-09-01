@@ -1,20 +1,27 @@
-package by.clevertec.bank.controller.command.impl;
+package by.clevertec.bank.controller.command.impl.post;
 
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
+import by.clevertec.bank.model.dto.CustomError;
 import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
+import by.clevertec.bank.model.validation.TransferValidationGroup;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class WithdrawalCommand extends Command {
+import javax.validation.groups.Default;
+
+public class TransferCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {
         try {
             AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
             TransactionDto transactionDto = readBody(request, TransactionDto.class);
-            validate(transactionDto);
-            return service.withdrawal(transactionDto);
+            if (transactionDto.getTo().getId().equals(transactionDto.getFrom().getId())){
+                throw new CommandException("to.id can not be equals from.id", CustomError.BAD_REQUEST);
+            }
+            validate(transactionDto, TransferValidationGroup.class, Default.class);
+            return service.transferMoney(transactionDto);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

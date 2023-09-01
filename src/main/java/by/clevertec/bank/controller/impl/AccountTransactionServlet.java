@@ -14,6 +14,11 @@ import java.io.IOException;
 @WebServlet(name = "transaction", value = "/transactions")
 public class AccountTransactionServlet extends AbstractHttpServlet {
     @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processCommand(CommandType.DELETE_TRANSACTION_BY_ID.getCommand(), req, resp);
+    }
+
+    @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp) throws ServletException, IOException {
         String account = req.getParameter(RequestParameter.ACCOUNT);

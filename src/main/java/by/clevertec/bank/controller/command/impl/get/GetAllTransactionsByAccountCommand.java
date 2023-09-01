@@ -1,25 +1,20 @@
-package by.clevertec.bank.controller.command.impl;
+package by.clevertec.bank.controller.command.impl.get;
 
+import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
-import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class DepositCommand extends Command {
-
+public class GetAllTransactionsByAccountCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {
+        AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
         try {
-            AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
-            TransactionDto transactionDto = readBody(request, TransactionDto.class);
-            validate(transactionDto);
-            return service.deposit(transactionDto);
+            return service.findAllByAccount(request.getParameter(RequestParameter.ACCOUNT));
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-
-
     }
 }

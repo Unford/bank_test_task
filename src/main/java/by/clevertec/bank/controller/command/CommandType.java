@@ -1,27 +1,41 @@
 package by.clevertec.bank.controller.command;
 
-import by.clevertec.bank.controller.command.impl.*;
+import by.clevertec.bank.controller.command.impl.put.UpdateAccountCommand;
+import by.clevertec.bank.controller.command.impl.post.CreateAccountCommand;
+import by.clevertec.bank.controller.command.impl.DefaultCommand;
+import by.clevertec.bank.controller.command.impl.delete.DeleteAccountByIdCommand;
+import by.clevertec.bank.controller.command.impl.delete.DeleteTransactionByIdCommand;
+import by.clevertec.bank.controller.command.impl.get.*;
+import by.clevertec.bank.controller.command.impl.post.DepositCommand;
+import by.clevertec.bank.controller.command.impl.post.TransferCommand;
+import by.clevertec.bank.controller.command.impl.post.WithdrawalCommand;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static by.clevertec.bank.controller.HttpMethod.*;
-import static by.clevertec.bank.controller.ServletPath.*;
+import static by.clevertec.bank.controller.ServletPath.ACCOUNT;
+import static by.clevertec.bank.controller.ServletPath.TRANSACTION;
 
 public enum CommandType {
+    DEFAULT_COMMAND(new DefaultCommand()),
+
     DEPOSIT(new DepositCommand(), TRANSACTION, POST),
     WITHDRAWAL(new WithdrawalCommand(), TRANSACTION, POST),
     TRANSFER(new TransferCommand(), TRANSACTION, POST),
-
-
     GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand(), TRANSACTION, GET),
-    DEFAULT_COMMAND(new DefaultCommand()),
     GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand(), TRANSACTION, GET),
+    DELETE_TRANSACTION_BY_ID(new DeleteTransactionByIdCommand(), TRANSACTION, DELETE),
+
+
     GET_ACCOUNT_BALANCE(new GetAccountBalanceCommand(), ACCOUNT, GET),
     GET_ACCOUNT_BY_ID(new GetAccountByIdCommand(), ACCOUNT, GET),
     GET_ACCOUNT_EXTRACT(new GetAccountExtract(), ACCOUNT, GET),
     GET_ACCOUNT_STATEMENT(new GetAccountStatement(), ACCOUNT, GET),
-    GET_ALL_ACCOUNTS(new GetAllAccountsCommand(), ACCOUNT, GET);
+    GET_ALL_ACCOUNTS(new GetAllAccountsCommand(), ACCOUNT, GET),
+    DELETE_ACCOUNT_BY_ID(new DeleteAccountByIdCommand(), ACCOUNT, DELETE),
+    CREATE_ACCOUNT(new CreateAccountCommand(), ACCOUNT, POST),
+    UPDATE_ACCOUNT_BY_ID(new UpdateAccountCommand(),ACCOUNT , PUT);
 
 
     private static final Logger logger = LogManager.getLogger();

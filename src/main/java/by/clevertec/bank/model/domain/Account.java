@@ -15,15 +15,15 @@ public class Account extends AbstractDaoEntity {
     private LocalDate openDate;
     private LocalDate lastAccrualDate;
     private Bank bank;
-    private User owner;
+    private User user;
     @Builder
     public Account(Long id, String account, LocalDate openDate, LocalDate lastAccrualDate,
-                   Bank bank, User owner) {
+                   Bank bank, User user) {
         super(id);
         this.account = account;
         this.openDate = openDate;
         this.lastAccrualDate = lastAccrualDate;
         this.bank = bank;
-        this.owner = owner;
+        this.user = user;
     }
 }

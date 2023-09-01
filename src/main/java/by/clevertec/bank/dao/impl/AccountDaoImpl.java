@@ -67,6 +67,18 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             where bank_account_id = ?""";
 
     private static final String FIND_ALL_QUERY = "SELECT * FROM bank_accounts";
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM bank_accounts " +
+            "WHERE bank_account_id = ?";
+    private static final String CREATE_QUERY = "insert into bank_accounts (account, open_date, last_accrual_date," +
+            " bank_id, user_id) values (?,?,?,?,?)";
+    private static final String FIND_BY_ID_BANK_USER_QUERY = """
+            SELECT ba.*, b.name as name,
+            u.full_name as full_name
+            from bank_accounts ba
+            join banks b on b.bank_id = ba.bank_id
+            join users u on u.user_id = ba.user_id
+            where account = ? OR (ba.bank_id = ? AND ba.user_id = ?)""";
+    private static final String UPDATE_QUERY = "UPDATE bank_accounts SET account = ? WHERE bank_account_id = ?";
 
 
     @Override
@@ -106,17 +118,50 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
     @Override
     public Account create(Account entity) throws DaoException {
-        return null;
+        try (PreparedStatement statement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+            LocalDate now = LocalDate.now();
+            entity.setOpenDate(now);
+            entity.setLastAccrualDate(now);
+            setPreparedStatement(statement, entity);
+            statement.executeUpdate();
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    entity.setId(resultSet.getLong(1));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Create account query error", e);
+            throw new DaoException("Create account query error", e);
+
+        }
+        return findById(entity.getId()).orElse(entity);
     }
 
     @Override
     public Account update(Account entity) throws DaoException {
-        return null;
+        try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY)) {
+            statement.setString(1, entity.getAccount());
+            statement.setLong(2, entity.getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Update account query error", e);
+            throw new DaoException("Update account query error", e);
+
+        }
+        return findById(entity.getId()).orElse(entity);
     }
 
     @Override
     public boolean deleteById(long id) throws DaoException {
-        return false;
+        int res;
+        try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_QUERY)) {
+            statement.setLong(1, id);
+            res = statement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("Delete account query error", e);
+            throw new DaoException("Delete account query error", e);
+        }
+        return res > 0;
     }
 
     @Override
@@ -128,7 +173,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
                     .lastAccrualDate(resultSet.getDate(ColumnName.Account.LAST_ACCRUAL_DATE).toLocalDate())
                     .openDate(resultSet.getDate(ColumnName.Account.OPEN_DATE).toLocalDate())
                     .bank(Bank.builder().id(resultSet.getLong(ColumnName.Account.BANK_ID)).build())
-                    .owner(User.builder().id(resultSet.getLong(ColumnName.Account.USER_ID)).build())
+                    .user(User.builder().id(resultSet.getLong(ColumnName.Account.USER_ID)).build())
                     .build();
         } catch (SQLException e) {
             logger.error("mapping account error");
@@ -148,7 +193,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
                             .id(resultSet.getLong(ColumnName.Account.BANK_ID))
                             .name(resultSet.getString(ColumnName.Bank.BANK_NAME))
                             .build())
-                    .owner(User.builder()
+                    .user(User.builder()
                             .id(resultSet.getLong(ColumnName.Account.USER_ID))
                             .fullName(resultSet.getString(ColumnName.User.FULL_NAME)).build())
                     .build();
@@ -160,7 +205,16 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
     @Override
     protected void setPreparedStatement(PreparedStatement statement, Account entity) throws DaoException {
-
+        try {
+            statement.setString(1, entity.getAccount());
+            statement.setDate(2, Date.valueOf(entity.getOpenDate()));
+            statement.setDate(3, Date.valueOf(entity.getLastAccrualDate()));
+            statement.setLong(4, entity.getBank().getId());
+            statement.setLong(5, entity.getUser().getId());
+        } catch (SQLException e) {
+            logger.error("error while setting account statement parameters", e);
+            throw new DaoException("error while setting account statement parameters");
+        }
     }
 
     @Override
@@ -244,5 +298,25 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             throw new DaoException("Sum All,income and expenditures by id between dates query error", e);
         }
         return stats;
+    }
+
+    @Override
+    public Optional<Account> findByAccountOrBankAndUser(String acc, long bankId, long userId) throws DaoException {
+        Optional<Account> account = Optional.empty();
+
+        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_BANK_USER_QUERY)) {
+            statement.setString(1, acc);
+            statement.setLong(2, bankId);
+            statement.setLong(3, userId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    account = Optional.ofNullable(mapFullEntity(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Find account by id bank and user query error");
+            throw new DaoException("Find account by id bank and user query error", e);
+        }
+        return account;
     }
 }

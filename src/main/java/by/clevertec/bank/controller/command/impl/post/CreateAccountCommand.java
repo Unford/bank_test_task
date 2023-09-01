@@ -1,20 +1,22 @@
-package by.clevertec.bank.controller.command.impl;
+package by.clevertec.bank.controller.command.impl.post;
 
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
-import by.clevertec.bank.service.AccountService;
+import by.clevertec.bank.model.dto.AccountDto;
+import by.clevertec.bank.model.validation.CreateValidationGroup;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class GetAllAccountsCommand extends Command {
+public class CreateAccountCommand extends Command {
     @Override
     public Object execute(HttpServletRequest request) throws CommandException {
-        AccountService accountService = AccountServiceImpl.getInstance();
         try {
-            return accountService.findAll();
+            AccountServiceImpl service = AccountServiceImpl.getInstance();
+            AccountDto dto = readBody(request, AccountDto.class);
+            validate(dto, CreateValidationGroup.class);
+            return service.create(dto);
         } catch (ServiceException e) {
-            logger.error(e);
             throw new CommandException(e);
         }
     }

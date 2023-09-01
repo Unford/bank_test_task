@@ -157,10 +157,35 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
             ModelMapper modelMapper = DataMapper.getModelMapper();
             Optional<AccountTransaction> transactionOptional = accountTransactionDao.findById(id);
             return modelMapper.map(transactionOptional
-                    .orElseThrow(()->new ServiceException("Transaction is not found")), TransactionDto.class);
+                    .orElseThrow(() -> new ServiceException("Transaction is not found")), TransactionDto.class);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);
         }
+    }
+
+    @Override
+    public boolean deleteById(long id) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
+            transaction.initialize(transactionDaoIml);
+            transactionDaoIml.findById(id).orElseThrow(() -> new ServiceException("Transaction is not found"));
+            return transactionDaoIml.deleteById(id);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public TransactionDto create(TransactionDto dto) throws ServiceException {
+        throw new UnsupportedOperationException("Create operation unsupported for transaction service use specific methods");
+    }
+
+    @Override
+    public TransactionDto update(TransactionDto dto) throws ServiceException {
+        throw new UnsupportedOperationException("Update operation unsupported for transaction service");
+
     }
 }
