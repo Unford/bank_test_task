@@ -6,8 +6,8 @@ import by.clevertec.bank.dao.ColumnName;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
-import by.clevertec.bank.model.domain.User;
 import by.clevertec.bank.model.domain.Bank;
+import by.clevertec.bank.model.domain.User;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static by.clevertec.bank.dao.ColumnName.*;
+import static by.clevertec.bank.dao.ColumnName.Transaction;
 
 /**
  * The `AccountTransactionDaoIml` class is an implementation of the `AccountTransactionDao` interface that provides methods
@@ -55,57 +55,57 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
 
     @Override
     public List<AccountTransaction> findAll() throws DaoException {
-        List<AccountTransaction> list = new ArrayList<>();
-        try (Statement statement = connection.createStatement()) {
-            try (ResultSet resultSet = statement.executeQuery(FIND_ALL_QUERY)) {
-                while (resultSet.next()) {
-                    AccountTransaction v = mapEntity(resultSet);
-                    list.add(v);
+        try {
+            return performStatement(FIND_ALL_QUERY, rs -> {
+                List<AccountTransaction> list = new ArrayList<>();
+                while (rs.next()) {
+                    AccountTransaction at = mapEntity(rs);
+                    list.add(at);
                 }
-            }
+                return list;
+            });
         } catch (SQLException e) {
             logger.error("Find All transactions query error");
             throw new DaoException("Find All transactions query error", e);
         }
-        return list;
     }
 
     @Override
     public Optional<AccountTransaction> findById(long id) throws DaoException {
-        Optional<AccountTransaction> accountTransaction = Optional.empty();
-
-        try (PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_QUERY)) {
-            statement.setLong(1, id);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    accountTransaction = Optional.ofNullable(mapFullEntity(resultSet));
-                }
-            }
+        try {
+            return Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_ID_QUERY,
+                    s -> s.setLong(1, id),
+                    rs -> rs.next() ? mapFullEntity(rs) : null));
         } catch (SQLException e) {
             logger.error("Find transaction by id query error");
             throw new DaoException("Find transaction by id query error", e);
         }
-        return accountTransaction;
+
     }
 
     @Override
-    public AccountTransaction create(AccountTransaction accountTransaction) throws DaoException {
-        try (PreparedStatement statement = connection.prepareStatement(CREATE_QUERY, Statement.RETURN_GENERATED_KEYS)) {
-            logger.debug(CREATE_QUERY);
-            accountTransaction.setDateTime(LocalDateTime.now());
-            setPreparedStatement(statement, accountTransaction);
-            statement.executeUpdate();
-            try (ResultSet resultSet = statement.getGeneratedKeys()) {
-                if (resultSet.next()) {
-                    accountTransaction.setId(resultSet.getLong(1));
+    public AccountTransaction create(AccountTransaction entity) throws DaoException {
+        logger.debug(CREATE_QUERY);
+        entity.setDateTime(LocalDateTime.now());
+        try {
+            long id = performPreparedUpdateReturnId(CREATE_QUERY, s -> {
+                s.setBigDecimal(1, entity.getSum());
+                s.setTimestamp(2, Timestamp.valueOf(entity.getDateTime()));
+                s.setLong(3, entity.getTo().getId());
+                if (entity.getFrom() != null) {
+                    s.setLong(4, entity.getFrom().getId());
+                } else {
+                    s.setNull(4, Types.BIGINT);
                 }
-            }
+            });
+            entity.setId(id);
+            return findById(id).orElse(entity);
         } catch (SQLException e) {
             logger.error("Create transaction query error", e);
             throw new DaoException("Create transaction query error", e);
 
         }
-        return findById(accountTransaction.getId()).orElse(accountTransaction);
+
     }
 
     @Override
@@ -115,15 +115,15 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
 
     @Override
     public boolean deleteById(long id) throws DaoException {
-        int res;
-        try (PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID_QUERY)) {
-            statement.setLong(1, id);
-            res = statement.executeUpdate();
+
+        try {
+            return performPreparedUpdateReturnRows(DELETE_BY_ID_QUERY,
+                    s -> s.setLong(1, id)) > 0;
         } catch (SQLException e) {
             logger.error("Delete transaction query error", e);
             throw new DaoException("Delete transaction query error", e);
         }
-        return res > 0;
+
     }
 
 
@@ -143,7 +143,8 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
         }
     }
 
-    private AccountTransaction mapFullEntity(ResultSet rs) throws SQLException {
+    @Override
+    protected AccountTransaction mapFullEntity(ResultSet rs) throws SQLException {
         try {
             return AccountTransaction.builder()
                     .id(rs.getLong(Transaction.ACCOUNT_TRANSACTION_ID))
@@ -168,65 +169,47 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
         }
     }
 
-    @Override
-    protected void setPreparedStatement(PreparedStatement statement, AccountTransaction entity) throws DaoException {
-        try {
-            statement.setBigDecimal(1, entity.getSum());
-            statement.setTimestamp(2, Timestamp.valueOf(entity.getDateTime()));
-            statement.setLong(3, entity.getTo().getId());
-            if (entity.getFrom() != null) {
-                statement.setLong(4, entity.getFrom().getId());
-            } else {
-                statement.setNull(4, Types.BIGINT);
-            }
-
-
-        } catch (SQLException e) {
-            logger.error("error while setting account transaction statement parameters", e);
-            throw new DaoException("error while setting account transaction statement parameters");
-        }
-    }
-
 
     @Override
     public List<AccountTransaction> findAllByAccount(String account) throws DaoException {
-        List<AccountTransaction> list = new ArrayList<>();
-
-        try (PreparedStatement statement = connection.prepareStatement(FIND_ALL_BY_ACCOUNT_QUERY)) {
-            statement.setString(1, account);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AccountTransaction v = mapEntity(resultSet);
-                    list.add(v);
-                }
-            }
+        try {
+            return performPreparedExecuteQuery(FIND_ALL_BY_ACCOUNT_QUERY,
+                    s -> s.setString(1, account), rs -> {
+                        List<AccountTransaction> list = new ArrayList<>();
+                        while (rs.next()) {
+                            AccountTransaction v = mapEntity(rs);
+                            list.add(v);
+                        }
+                        return list;
+                    });
         } catch (SQLException e) {
             logger.error("Find All ingredients by account query error");
             throw new DaoException("Find All ingredients by account query error", e);
         }
-        return list;
     }
 
     @Override
-    public List<AccountTransaction> findAllByIdAndBetweenDates(long id, LocalDate from, LocalDate to) throws DaoException{
-        List<AccountTransaction> list = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(FIND_ALL_BY_ACCOUNT_ID_AND_DATES_QUERY)) {
-            statement.setLong(1, id);
-            statement.setLong(2, id);
-            statement.setDate(3, Date.valueOf(from));
-            statement.setDate(4, Date.valueOf(to.plusDays(1)));
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    AccountTransaction v = mapEntity(resultSet);
-                    list.add(v);
-                }
-            }
+    public List<AccountTransaction> findAllByIdAndBetweenDates(long id, LocalDate from, LocalDate to) throws DaoException {
+        try {
+            return performPreparedExecuteQuery(FIND_ALL_BY_ACCOUNT_ID_AND_DATES_QUERY,
+                    s -> {
+                        s.setLong(1, id);
+                        s.setLong(2, id);
+                        s.setDate(3, Date.valueOf(from));
+                        s.setDate(4, Date.valueOf(to.plusDays(1)));
+                    }, rs -> {
+                        List<AccountTransaction> list = new ArrayList<>();
+                        while (rs.next()) {
+                            AccountTransaction v = mapEntity(rs);
+                            list.add(v);
+                        }
+                        return list;
+                    });
         } catch (SQLException e) {
             logger.error("Find All transactions by account id and between dates query error");
             throw new DaoException("Find All transactions by account id and between dates query error", e);
         }
-        return list;
+
     }
 
 

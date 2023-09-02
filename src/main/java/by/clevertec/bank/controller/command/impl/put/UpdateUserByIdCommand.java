@@ -3,23 +3,22 @@ package by.clevertec.bank.controller.command.impl.put;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
-import by.clevertec.bank.model.dto.AccountDto;
+import by.clevertec.bank.model.dto.UserDto;
 import by.clevertec.bank.model.validation.UpdateValidationGroup;
-import by.clevertec.bank.service.impl.AccountServiceImpl;
+import by.clevertec.bank.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
 import javax.validation.groups.Default;
 
 /**
- * The UpdateAccountCommand class is a Java class that extends the Command class and is responsible for executing the
- * update operation on an account.
+ * The UpdateUserByIdCommand class is a Java class that updates a user by their ID using data from an HTTP request.
  */
-public class UpdateAccountCommand extends Command {
+public class UpdateUserByIdCommand extends Command<UserDto> {
     @Override
-    public Object execute(HttpServletRequest request) throws CommandException {
+    public UserDto execute(HttpServletRequest request) throws CommandException {
         try {
-            AccountServiceImpl service = AccountServiceImpl.getInstance();
-            AccountDto dto = readBody(request, AccountDto.class);
+            UserServiceImpl service = UserServiceImpl.getInstance();
+            UserDto dto = readBody(request, UserDto.class);
             validate(dto, UpdateValidationGroup.class, Default.class);
             return service.update(dto);
         } catch (ServiceException e) {

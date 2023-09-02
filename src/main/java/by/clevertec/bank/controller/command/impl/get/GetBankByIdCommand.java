@@ -4,25 +4,24 @@ import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
-import by.clevertec.bank.model.dto.AccountDto;
-import by.clevertec.bank.service.AccountService;
-import by.clevertec.bank.service.impl.AccountServiceImpl;
+import by.clevertec.bank.model.dto.BankDto;
+import by.clevertec.bank.service.impl.BankServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * The GetAccountByIdCommand class is a Java class that retrieves an account by its ID and returns it.
+ * The GetBankByIdCommand class is a Java class that retrieves a bank by its ID from a service and returns it as a BankDto
+ * object.
  */
-public class GetAccountByIdCommand extends Command<AccountDto> {
+public class GetBankByIdCommand extends Command<BankDto> {
     @Override
-    public AccountDto execute(HttpServletRequest request) throws CommandException {
-        AccountService accountService = AccountServiceImpl.getInstance();
+    public BankDto execute(HttpServletRequest request) throws CommandException {
+        BankServiceImpl service = BankServiceImpl.getInstance();
         try {
             long id = Long.parseLong(request.getParameter(RequestParameter.ID));
-            return accountService.findById(id);
+            return service.findById(id);
         }catch (NumberFormatException | ServiceException e){
             logger.error(e);
             throw new CommandException(e);
         }
-
     }
 }

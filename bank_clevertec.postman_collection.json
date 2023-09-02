@@ -1,0 +1,744 @@
+{
+	"info": {
+		"_postman_id": "9e5b5c53-e70d-4b37-878f-d6f6a03868bf",
+		"name": "bank_clevertec",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20492650"
+	},
+	"item": [
+		{
+			"name": "bank",
+			"item": [
+				{
+					"name": "get bank by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/banks?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"banks"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all banks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/banks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"banks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update bank",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 3,\n    \"name\": \"Bank Da\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/banks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"banks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Bank",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Bank Dass\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/banks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"banks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete bank by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/banks?id=7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"banks"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transaction",
+			"item": [
+				{
+					"name": "Get Transactions By Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?command=GET_ALL_TRANSACTIONS_BY_ACCOUNT&account=125612",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "7",
+									"disabled": true
+								},
+								{
+									"key": "command",
+									"value": "GET_ALL_TRANSACTIONS_BY_ACCOUNT"
+								},
+								{
+									"key": "account",
+									"value": "125612"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deposit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sum\": 112.33,\n    \"from\": {\n        \"id\": 5\n    },\n    \"to\": {\n        \"id\": 1\n    }\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?command=deposit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "deposit"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WithDrawal",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sum\": 13.01,\n\n    \"to\": {\n        \"id\": 1\n    }\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?command=withdrawal",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "withdrawal"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MoneyTransfer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sum\": 10,\n    \"from\":{\n        \"id\": 4\n    },\n    \"to\": {\n        \"id\": 1\n    }\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?command=transfer",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "transfer"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete transaction by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?id=3414",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "3414"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get transaction by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get user by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/users?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"users"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"fullName\": \"John Doe 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fullName\": \"John Doe 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/users?id=21",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"users"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "21"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "account",
+			"item": [
+				{
+					"name": "get account balance by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts?command=get_account_balance&id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "get_account_balance"
+								},
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get account by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET_ACCOUNT_RECORD",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts?command=GET_ACCOUNT_EXTRACT&id=1&from=31-08-2023&to=31-09-2023",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "GET_ACCOUNT_EXTRACT"
+								},
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "from",
+									"value": "31-08-2023"
+								},
+								{
+									"key": "to",
+									"value": "31-09-2023"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET_ACCOUNT_STATEMENT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts?command=GET_ACCOUNT_STATEMENT&id=1&from=31-08-2023&to=31-09-2023",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "GET_ACCOUNT_STATEMENT"
+								},
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "from",
+									"value": "31-08-2023"
+								},
+								{
+									"key": "to",
+									"value": "31-09-2023"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete account by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts?id=1123123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1123123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account\": \"123126322\",\n    \"bank\":{\n        \"id\":5\n    },\n    \"user\":{\n        \"id\": 10\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts?command=CREATE_ACCOUNT",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "CREATE_ACCOUNT"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update account",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1222,\n    \"account\": \"125611112\"\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/accounts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

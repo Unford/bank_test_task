@@ -11,9 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
  * The DeleteTransactionByIdCommand class is a Java class that extends the Command class and is responsible for executing a
  * command to delete an account transaction by its ID.
  */
-public class DeleteTransactionByIdCommand extends Command {
+public class DeleteTransactionByIdCommand extends Command<Boolean> {
     @Override
-    public Object execute(HttpServletRequest request) throws CommandException {
+    public Boolean execute(HttpServletRequest request) throws CommandException {
         AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
         try {
             long id = Long.parseLong(request.getParameter(RequestParameter.ID));

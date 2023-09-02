@@ -11,16 +11,17 @@ import by.clevertec.bank.model.dto.TransactionDto;
 import by.clevertec.bank.service.AccountTransactionService;
 import by.clevertec.bank.util.DataMapper;
 import by.clevertec.bank.util.PdfFileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The `AccountTransactionServiceImpl` class is a Java implementation of the `AccountTransactionService` interface that
+ * provides methods for depositing, withdrawing, transferring money, and managing transactions.
+ */
 public final class AccountTransactionServiceImpl implements AccountTransactionService {
-    private static final Logger logger = LogManager.getLogger();
 
     private AccountTransactionServiceImpl() {
     }

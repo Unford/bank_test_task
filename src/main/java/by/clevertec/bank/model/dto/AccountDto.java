@@ -1,6 +1,6 @@
 package by.clevertec.bank.model.dto;
 
-import by.clevertec.bank.model.validation.CreateValidationGroup;
+import by.clevertec.bank.model.validation.CreateAccountValidationGroup;
 import by.clevertec.bank.model.validation.UpdateValidationGroup;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,14 +27,14 @@ public class AccountDto {
     @Positive
     @NotNull
     private Long id;
-    @NotBlank(groups = {CreateValidationGroup.class, UpdateValidationGroup.class})
+    @NotBlank(groups = {CreateAccountValidationGroup.class, UpdateValidationGroup.class})
     private String account;
     private LocalDate openDate;
     private LocalDate lastAccrualDate;
-    @NotNull(groups = CreateValidationGroup.class)
+    @NotNull(groups = CreateAccountValidationGroup.class)
     @Valid
     private BankDto bank;
-    @NotNull(groups = CreateValidationGroup.class)
+    @NotNull(groups = CreateAccountValidationGroup.class)
     @Valid
     private UserDto user;
 

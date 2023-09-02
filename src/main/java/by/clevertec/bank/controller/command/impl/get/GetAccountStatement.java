@@ -17,9 +17,9 @@ import java.time.format.DateTimeParseException;
 /**
  * The GetAccountStatement class is a Java command that retrieves an account statement based on the provided parameters.
  */
-public class GetAccountStatement extends Command {
+public class GetAccountStatement extends Command<AccountStatementDto> {
     @Override
-    public Object execute(HttpServletRequest request) throws CommandException {
+    public AccountStatementDto execute(HttpServletRequest request) throws CommandException {
         AccountService service = AccountServiceImpl.getInstance();
         try {
             String idStr = request.getParameter(RequestParameter.ID);

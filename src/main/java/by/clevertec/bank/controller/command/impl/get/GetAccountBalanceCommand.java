@@ -16,9 +16,9 @@ import java.math.BigDecimal;
  * The GetAccountBalanceCommand class is a Java class that retrieves the balance of a specific account and returns it along
  * with the account ID in a DTO (Data Transfer Object).
  */
-public class GetAccountBalanceCommand extends Command {
+public class GetAccountBalanceCommand extends Command<AccountExtractDto> {
     @Override
-    public Object execute(HttpServletRequest request) throws CommandException {
+    public AccountExtractDto execute(HttpServletRequest request) throws CommandException {
         AccountService accountService = AccountServiceImpl.getInstance();
         try {
             long id = Long.parseLong(request.getParameter(RequestParameter.ID));

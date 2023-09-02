@@ -10,9 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * The WithdrawalCommand class is responsible for executing a withdrawal transaction on an account.
  */
-public class WithdrawalCommand extends Command {
+public class WithdrawalCommand extends Command<TransactionDto> {
     @Override
-    public Object execute(HttpServletRequest request) throws CommandException {
+    public TransactionDto execute(HttpServletRequest request) throws CommandException {
         try {
             AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
             TransactionDto transactionDto = readBody(request, TransactionDto.class);

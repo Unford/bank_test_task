@@ -1,6 +1,8 @@
 package by.clevertec.bank.service;
 
 import by.clevertec.bank.exception.ServiceException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -11,6 +13,8 @@ import java.util.List;
  * identifier, deleting an object by its ID, creating a new object, and updating an existing object.
  */
 public interface CrudService<T> {
+    Logger logger = LogManager.getLogger();
+
     /**
      * The function `findAll()` returns a list of objects of type `T` and throws a `ServiceException` if an error occurs.
      *

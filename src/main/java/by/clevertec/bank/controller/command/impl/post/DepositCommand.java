@@ -10,10 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * The DepositCommand class is responsible for executing a deposit transaction on an account.
  */
-public class DepositCommand extends Command {
+public class DepositCommand extends Command<TransactionDto> {
 
     @Override
-    public Object execute(HttpServletRequest request) throws CommandException {
+    public TransactionDto execute(HttpServletRequest request) throws CommandException {
         try {
             AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
             TransactionDto transactionDto = readBody(request, TransactionDto.class);

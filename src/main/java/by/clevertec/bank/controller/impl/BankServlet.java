@@ -1,4 +1,3 @@
-
 package by.clevertec.bank.controller.impl;
 
 
@@ -14,19 +13,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * The AccountServlet class is a Java servlet that handles HTTP requests for account-related operations such as creating,
- * updating, deleting, and retrieving accounts.
+ * The BankServlet class is a Java servlet that handles HTTP requests for banking operations such as updating, retrieving,
+ * and creating banks.
  */
-@WebServlet(name = "account", value = "/accounts")
-public class AccountServlet extends AbstractHttpServlet {
-    @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processCommand(CommandType.DELETE_ACCOUNT_BY_ID.getCommand(), req, resp);
-    }
+@WebServlet(name = "bank", value = "/banks")
+public class BankServlet extends AbstractHttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processCommand(CommandType.UPDATE_ACCOUNT_BY_ID.getCommand(), req, resp);
+        processCommand(CommandType.UPDATE_BANK_BY_ID.getCommand(), req, resp);
     }
 
     @Override
@@ -34,11 +29,10 @@ public class AccountServlet extends AbstractHttpServlet {
         Command command = CommandType.defineCommand(req.getParameter(RequestParameter.COMMAND), req);
         if (command.equals(CommandType.DEFAULT_COMMAND.getCommand())) {
             if (req.getParameter(RequestParameter.ID) != null){
-                command = CommandType.GET_ACCOUNT_BY_ID.getCommand();
+                command = CommandType.GET_BANK_BY_ID.getCommand();
             }else {
-                command = CommandType.GET_ALL_ACCOUNTS.getCommand();
+                command = CommandType.GET_ALL_BANKS.getCommand();
             }
-
         }
         processCommand(command, req, resp);
 
@@ -46,6 +40,11 @@ public class AccountServlet extends AbstractHttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        processCommand(CommandType.CREATE_ACCOUNT.getCommand(), req, resp);
+        processCommand(CommandType.CREATE_BANK.getCommand(), req, resp);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processCommand(CommandType.DELETE_BANK_BY_ID.getCommand(), req, resp);
     }
 }

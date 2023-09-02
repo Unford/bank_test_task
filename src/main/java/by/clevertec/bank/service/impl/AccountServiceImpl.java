@@ -3,6 +3,8 @@ package by.clevertec.bank.service.impl;
 import by.clevertec.bank.dao.EntityTransaction;
 import by.clevertec.bank.dao.impl.AccountDaoImpl;
 import by.clevertec.bank.dao.impl.AccountTransactionDaoIml;
+import by.clevertec.bank.dao.impl.BankDaoImpl;
+import by.clevertec.bank.dao.impl.UserDaoImpl;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.domain.Account;
@@ -11,16 +13,17 @@ import by.clevertec.bank.model.dto.*;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.util.DataMapper;
 import by.clevertec.bank.util.PdfFileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountServiceImpl implements AccountService {
-    private static final Logger logger = LogManager.getLogger();
+/**
+ * The `AccountServiceImpl` class is a Java implementation of the `AccountService` interface that provides various methods
+ * for managing and manipulating account data.
+ */
+public final class AccountServiceImpl implements AccountService {
     private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100L);
 
 
@@ -144,7 +147,7 @@ public class AccountServiceImpl implements AccountService {
             transaction.initialize(accountDao);
             ModelMapper modelMapper = DataMapper.getModelMapper();
             return modelMapper.map(accountDao.findById(id)
-                    .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND)),
+                            .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND)),
                     AccountDto.class);
         } catch (DaoException e) {
             logger.error(e);
@@ -176,10 +179,16 @@ public class AccountServiceImpl implements AccountService {
         EntityTransaction transaction = new EntityTransaction();
         try (transaction) {
             AccountDaoImpl accountDao = new AccountDaoImpl();
-            transaction.initialize(accountDao);
+            BankDaoImpl bankDao = new BankDaoImpl();
+            UserDaoImpl userDao = new UserDaoImpl();
+            transaction.initialize(accountDao, bankDao, userDao);
+            bankDao.findById(dto.getBank().getId())
+                    .orElseThrow(() -> new ServiceException("Bank is not found", CustomError.NOT_FOUND));
+            userDao.findById(dto.getUser().getId())
+                    .orElseThrow(() -> new ServiceException("User is not found", CustomError.NOT_FOUND));
             if (accountDao.findByAccountOrBankAndUser(dto.getAccount(),
                     dto.getBank().getId(), dto.getUser().getId()).isPresent()) {
-                throw new ServiceException("Account already exist!",  CustomError.CONFLICT);
+                throw new ServiceException("Account already exist!", CustomError.CONFLICT);
             } else {
                 Account account = accountDao.create(DataMapper.getModelMapper().map(dto, Account.class));
                 return DataMapper.getModelMapper().map(account, AccountDto.class);
@@ -197,6 +206,8 @@ public class AccountServiceImpl implements AccountService {
         try (transaction) {
             AccountDaoImpl accountDao = new AccountDaoImpl();
             transaction.initialize(accountDao);
+            accountDao.findById(dto.getId())
+                    .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
             Optional<Account> optionalAccount = accountDao
                     .findByAccountOrBankAndUser(dto.getAccount(), 0, 0);
             if (optionalAccount.isPresent() && !optionalAccount.get().getId().equals(dto.getId())) {

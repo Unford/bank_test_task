@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * The above class is an abstract class in Java that provides common functionality for executing commands and handling
  * validation and reading of request bodies.
  */
-public abstract class Command {
+public abstract class Command <S>{
     protected static final Logger logger = LogManager.getLogger();
 
     /**
@@ -81,5 +81,5 @@ public abstract class Command {
      * other data related to the request.
      * @return The method is returning an Object.
      */
-    public abstract Object execute(HttpServletRequest request) throws CommandException;
+    public abstract S execute(HttpServletRequest request) throws CommandException;
 }
