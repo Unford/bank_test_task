@@ -27,4 +27,12 @@ public interface AccountTransactionDao {
      * @return The method is returning a list of AccountTransaction objects.
      */
     List<AccountTransaction> findAllByIdAndBetweenDates(long id, LocalDate from, LocalDate to) throws DaoException;
+
+    /**
+     * The function returns a list of AccountTransaction objects that belong to a specific account ID.
+     *
+     * @param id The id parameter is a long value representing the account id.
+     * @return The method `findAllByAccountId` returns a list of `AccountTransaction` objects.
+     */
+    List<AccountTransaction> findAllByAccountId(long id) throws DaoException;
 }

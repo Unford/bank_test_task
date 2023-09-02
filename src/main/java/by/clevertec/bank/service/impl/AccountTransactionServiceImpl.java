@@ -134,6 +134,22 @@ public final class AccountTransactionServiceImpl implements AccountTransactionSe
         }
     }
 
+    @Override
+    public List<TransactionDto> findAllByAccountId(long id) throws ServiceException {
+        EntityTransaction transaction = new EntityTransaction();
+        try (transaction) {
+            AccountTransactionDaoIml accountTransactionDao = new AccountTransactionDaoIml();
+            transaction.initialize(accountTransactionDao);
+            ModelMapper modelMapper = DataMapper.getModelMapper();
+            return accountTransactionDao.findAllByAccountId(id).stream()
+                    .map(e -> modelMapper.map(e, TransactionDto.class)).toList();
+        } catch (DaoException e) {
+            transaction.rollback();
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
 
     @Override
     public List<TransactionDto> findAll() throws ServiceException {

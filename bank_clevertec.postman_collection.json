@@ -355,6 +355,36 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get all transactions by account id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/bank/transactions?command=GET_ALL_TRANSACTIONS_BY_ACCOUNT_ID&account_id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"bank",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "command",
+									"value": "GET_ALL_TRANSACTIONS_BY_ACCOUNT_ID"
+								},
+								{
+									"key": "account_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

@@ -49,4 +49,12 @@ public interface AccountTransactionService extends CrudService<TransactionDto> {
      * @return The method `findAllByAccount` returns a list of `TransactionDto` objects.
      */
     List<TransactionDto> findAllByAccount(String account) throws ServiceException;
+
+    /**
+     * The function returns a list of TransactionDto objects based on the given account ID.
+     *
+     * @param id The id parameter is the unique identifier of the account for which we want to find all transactions.
+     * @return The method `findAllByAccountId` returns a list of `TransactionDto` objects.
+     */
+    List<TransactionDto> findAllByAccountId(long id) throws ServiceException;
 }

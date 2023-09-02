@@ -5,6 +5,7 @@ package by.clevertec.bank.controller;
  * The RequestParameter class contains constants for various request parameters used in servlets.
  */
 public final class RequestParameter {
+
     private RequestParameter(){}
 
     /**
@@ -28,6 +29,7 @@ public final class RequestParameter {
      * The constant DATE_TO.
      */
     public static final String DATE_TO = "to";
+    public static final String ACCOUNT_ID = "account_id";
 
 
 

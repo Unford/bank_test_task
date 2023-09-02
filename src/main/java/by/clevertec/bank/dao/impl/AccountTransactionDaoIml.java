@@ -51,6 +51,8 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
             " where (owner_accounts_id = ? OR sender_account_id = ?) AND date BETWEEN ? AND ?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM accounts_transactions " +
             "WHERE account_transaction_id = ?";
+    private static final String FIND_ALL_BY_ACCOUNT_ID_QUERY = FIND_ALL_QUERY +
+            " WHERE sender_account_id = ? OR owner_accounts_id = ?";
 
 
     @Override
@@ -210,6 +212,27 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
             throw new DaoException("Find All transactions by account id and between dates query error", e);
         }
 
+    }
+
+    @Override
+    public List<AccountTransaction> findAllByAccountId(long id) throws DaoException {
+        try {
+            return performPreparedExecuteQuery(FIND_ALL_BY_ACCOUNT_ID_QUERY,
+                    s -> {
+                        s.setLong(1, id);
+                        s.setLong(2, id);
+                    }, rs -> {
+                        List<AccountTransaction> list = new ArrayList<>();
+                        while (rs.next()) {
+                            AccountTransaction v = mapEntity(rs);
+                            list.add(v);
+                        }
+                        return list;
+                    });
+        } catch (SQLException e) {
+            logger.error("Find All ingredients by account id query error");
+            throw new DaoException("Find All ingredients by account id query error", e);
+        }
     }
 
 

@@ -30,6 +30,8 @@ public enum CommandType {
     TRANSFER(new TransferCommand(), TRANSACTION, POST),
     GET_ALL_TRANSACTIONS(new GetAllTransactionsCommand(), TRANSACTION, GET),
     GET_ALL_TRANSACTIONS_BY_ACCOUNT(new GetAllTransactionsByAccountCommand(), TRANSACTION, GET),
+    GET_ALL_TRANSACTIONS_BY_ACCOUNT_ID(new GetAllTransactionsByAccountIdCommand(), TRANSACTION, GET),
+
     GET_TRANSACTION_BY_ID(new GetTransactionById(), TRANSACTION, GET),
 
     DELETE_TRANSACTION_BY_ID(new DeleteTransactionByIdCommand(), TRANSACTION, DELETE),
