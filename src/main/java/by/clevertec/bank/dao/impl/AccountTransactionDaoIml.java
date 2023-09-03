@@ -185,8 +185,8 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
                         return list;
                     });
         } catch (SQLException e) {
-            logger.error("Find All ingredients by account query error");
-            throw new DaoException("Find All ingredients by account query error", e);
+            logger.error("Find All transactions by account query error");
+            throw new DaoException("Find All transactions by account query error", e);
         }
     }
 
@@ -230,8 +230,8 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
                         return list;
                     });
         } catch (SQLException e) {
-            logger.error("Find All ingredients by account id query error");
-            throw new DaoException("Find All ingredients by account id query error", e);
+            logger.error("Find All transactions by account id query error");
+            throw new DaoException("Find All transactions by account id query error", e);
         }
     }
 
