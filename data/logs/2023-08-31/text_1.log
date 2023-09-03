@@ -1,0 +1,130 @@
+2023-08-29 10:28:19 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-29 11:15:11 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-29 11:26:18 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-29 11:28:25 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-30 13:20:28 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-30 13:21:05 DEBUG clevertec.bank.controller.command.CommandType - DEPOSIT
+2023-08-30 13:24:22 DEBUG clevertec.bank.controller.command.CommandType - DEPOSIT
+2023-08-30 13:26:34 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-30 13:27:37 DEBUG clevertec.bank.controller.command.CommandType - DEPOSIT
+2023-08-30 14:53:55 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-30 16:15:21 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-30 16:17:27 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 13:08:55 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 13:08:55 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 13:09:25 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 13:09:55 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 13:09:55 DEBUG clevertec.bank.service.impl.AccountServiceImpl - accrue income -  Account(account=13131313131, openDate=2023-08-30, lastAccrualDate=2023-04-12, bank=Bank(name=null), owner=User(fullName=null))
+2023-08-31 18:44:42 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 18:44:42 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:45:12 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:45:15 DEBUG clevertec.bank.controller.command.CommandType - Command - WITHDRAWAL, /transactions
+2023-08-31 18:45:15 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 18:45:42 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:46:12 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:46:42 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:47:12 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:47:32 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:47:32 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 18:47:53 DEBUG clevertec.bank.controller.command.CommandType - Command - WITHDRAWAL, /transactions
+2023-08-31 18:47:53 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 18:48:02 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:48:14 DEBUG clevertec.bank.controller.command.CommandType - Command - TRANSFER, /transactions
+2023-08-31 18:48:14 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 18:48:32 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:48:44 DEBUG clevertec.bank.controller.command.CommandType - Command - DEPOSIT, /transactions
+2023-08-31 18:48:44 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 18:49:02 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:49:32 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:50:02 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:50:32 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:51:02 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:51:32 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:52:02 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:52:32 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:53:02 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 18:55:08 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 19:58:07 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:13:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:13:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:14:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:14:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:15:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:15:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:16:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:16:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:17:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:17:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:18:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:18:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:19:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:19:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:20:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:20:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:21:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:21:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:22:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:22:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:23:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:23:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:24:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:24:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:25:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:25:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:26:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:26:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:27:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:27:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:28:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:28:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:29:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:29:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:30:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:30:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:31:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:31:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:32:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:32:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:33:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:33:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:34:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:34:37 DEBUG clevertec.bank.controller.command.CommandType - Command - DEPOSIT, /transactions
+2023-08-31 20:34:37 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 20:34:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:35:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:35:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:36:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:36:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:37:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:37:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:38:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:38:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:39:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:39:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:40:14 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:40:44 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:41:10 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:41:10 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 20:41:28 DEBUG clevertec.bank.controller.command.CommandType - Command - DEPOSIT, /transactions
+2023-08-31 20:41:29 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 20:41:40 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:42:10 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:42:40 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:43:10 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:43:40 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:44:10 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:44:40 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:45:10 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:45:40 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:46:10 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:46:50 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:46:50 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 20:46:59 DEBUG clevertec.bank.controller.command.CommandType - Command - DEPOSIT, /transactions
+2023-08-31 20:47:00 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 20:47:10 DEBUG clevertec.bank.controller.command.CommandType - Command - DEPOSIT, /transactions
+2023-08-31 20:47:10 DEBUG by.clevertec.bank.dao.AbstractDao - insert into accounts_transactions (sum, date, owner_accounts_id, sender_account_id) values (?,?,?,?)
+2023-08-31 20:47:20 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:47:50 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:48:38 DEBUG bank.controller.listener.ServletContextListenerImpl.AccrualTask - Accrual task is working
+2023-08-31 20:48:38 INFO  clevertec.bank.controller.listener.ServletContextListenerImpl - Context successfully loaded
+2023-08-31 20:48:55 DEBUG clevertec.bank.controller.command.CommandType - Command - DEPOSIT, /transactions
