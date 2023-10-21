@@ -6,8 +6,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -64,13 +66,18 @@ public final class ConnectionPool {
     public static void close() {
         if (dataSource != null) {
             dataSource.close();
-            DriverManager.getDrivers().asIterator().forEachRemaining(driver -> {
+            Enumeration<Driver> drivers = DriverManager.getDrivers();
+            while (drivers.hasMoreElements()){
                 try {
-                    DriverManager.deregisterDriver(driver);
+                    DriverManager.deregisterDriver(drivers.nextElement());
                 } catch (SQLException e) {
                     logger.error("SQL error while deregister driver", e);
                 }
-            });
+            }
+            dataSource = null;
+            initCheck.set(false);
         }
+
+
     }
 }

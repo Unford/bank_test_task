@@ -56,9 +56,9 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
 
 
     @Override
-    public List<AccountTransaction> findAll() throws DaoException {
+    public List<AccountTransaction> findAll(Connection connection) throws DaoException {
         try {
-            return performStatement(FIND_ALL_QUERY, rs -> {
+            return performStatement(connection, FIND_ALL_QUERY, rs -> {
                 List<AccountTransaction> list = new ArrayList<>();
                 while (rs.next()) {
                     AccountTransaction at = mapEntity(rs);
@@ -73,9 +73,9 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     }
 
     @Override
-    public Optional<AccountTransaction> findById(long id) throws DaoException {
+    public Optional<AccountTransaction> findById(Connection connection, long id) throws DaoException {
         try {
-            return Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_ID_QUERY,
+            return Optional.ofNullable(performPreparedExecuteQuery(connection, FIND_BY_ID_QUERY,
                     s -> s.setLong(1, id),
                     rs -> rs.next() ? mapFullEntity(rs) : null));
         } catch (SQLException e) {
@@ -86,11 +86,11 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     }
 
     @Override
-    public AccountTransaction create(AccountTransaction entity) throws DaoException {
+    public AccountTransaction create(Connection connection, AccountTransaction entity) throws DaoException {
         logger.debug(CREATE_QUERY);
         entity.setDateTime(LocalDateTime.now());
         try {
-            long id = performPreparedUpdateReturnId(CREATE_QUERY, s -> {
+            long id = performPreparedUpdateReturnId(connection, CREATE_QUERY, s -> {
                 s.setBigDecimal(1, entity.getSum());
                 s.setTimestamp(2, Timestamp.valueOf(entity.getDateTime()));
                 s.setLong(3, entity.getTo().getId());
@@ -101,7 +101,7 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
                 }
             });
             entity.setId(id);
-            return findById(id).orElse(entity);
+            return findById(connection, id).orElse(entity);
         } catch (SQLException e) {
             logger.error("Create transaction query error", e);
             throw new DaoException("Create transaction query error", e);
@@ -111,15 +111,15 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     }
 
     @Override
-    public AccountTransaction update(AccountTransaction entity) throws DaoException {
+    public AccountTransaction update(Connection connection, AccountTransaction entity) throws DaoException {
         throw new UnsupportedOperationException("Update query is forbidden for account transaction dao");
     }
 
     @Override
-    public boolean deleteById(long id) throws DaoException {
+    public boolean deleteById(Connection connection, long id) throws DaoException {
 
         try {
-            return performPreparedUpdateReturnRows(DELETE_BY_ID_QUERY,
+            return performPreparedUpdateReturnRows(connection, DELETE_BY_ID_QUERY,
                     s -> s.setLong(1, id)) > 0;
         } catch (SQLException e) {
             logger.error("Delete transaction query error", e);
@@ -173,9 +173,9 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
 
 
     @Override
-    public List<AccountTransaction> findAllByAccount(String account) throws DaoException {
+    public List<AccountTransaction> findAllByAccount(Connection connection, String account) throws DaoException {
         try {
-            return performPreparedExecuteQuery(FIND_ALL_BY_ACCOUNT_QUERY,
+            return performPreparedExecuteQuery(connection, FIND_ALL_BY_ACCOUNT_QUERY,
                     s -> s.setString(1, account), rs -> {
                         List<AccountTransaction> list = new ArrayList<>();
                         while (rs.next()) {
@@ -191,9 +191,9 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     }
 
     @Override
-    public List<AccountTransaction> findAllByIdAndBetweenDates(long id, LocalDate from, LocalDate to) throws DaoException {
+    public List<AccountTransaction> findAllByIdAndBetweenDates(Connection connection, long id, LocalDate from, LocalDate to) throws DaoException {
         try {
-            return performPreparedExecuteQuery(FIND_ALL_BY_ACCOUNT_ID_AND_DATES_QUERY,
+            return performPreparedExecuteQuery(connection, FIND_ALL_BY_ACCOUNT_ID_AND_DATES_QUERY,
                     s -> {
                         s.setLong(1, id);
                         s.setLong(2, id);
@@ -215,9 +215,9 @@ public class AccountTransactionDaoIml extends AbstractDao<AccountTransaction> im
     }
 
     @Override
-    public List<AccountTransaction> findAllByAccountId(long id) throws DaoException {
+    public List<AccountTransaction> findAllByAccountId(Connection connection, long id) throws DaoException {
         try {
-            return performPreparedExecuteQuery(FIND_ALL_BY_ACCOUNT_ID_QUERY,
+            return performPreparedExecuteQuery(connection,FIND_ALL_BY_ACCOUNT_ID_QUERY,
                     s -> {
                         s.setLong(1, id);
                         s.setLong(2, id);

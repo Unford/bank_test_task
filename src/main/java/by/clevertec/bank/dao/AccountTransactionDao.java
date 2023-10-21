@@ -3,6 +3,7 @@ package by.clevertec.bank.dao;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.AccountTransaction;
 
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface AccountTransactionDao {
      * account transactions.
      * @return The method is returning a list of AccountTransaction objects.
      */
-    List<AccountTransaction> findAllByAccount(String account) throws DaoException;
+    List<AccountTransaction> findAllByAccount(Connection connection, String account) throws DaoException;
 
     /**
      * The function finds all account transactions by a given ID and within a specified date range.
@@ -26,7 +27,7 @@ public interface AccountTransactionDao {
      * @param to The "to" parameter is the end date of the date range for which you want to find account transactions.
      * @return The method is returning a list of AccountTransaction objects.
      */
-    List<AccountTransaction> findAllByIdAndBetweenDates(long id, LocalDate from, LocalDate to) throws DaoException;
+    List<AccountTransaction> findAllByIdAndBetweenDates(Connection connection, long id, LocalDate from, LocalDate to) throws DaoException;
 
     /**
      * The function returns a list of AccountTransaction objects that belong to a specific account ID.
@@ -34,5 +35,5 @@ public interface AccountTransactionDao {
      * @param id The id parameter is a long value representing the account id.
      * @return The method `findAllByAccountId` returns a list of `AccountTransaction` objects.
      */
-    List<AccountTransaction> findAllByAccountId(long id) throws DaoException;
+    List<AccountTransaction> findAllByAccountId(Connection connection, long id) throws DaoException;
 }

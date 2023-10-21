@@ -1,6 +1,7 @@
 package by.clevertec.bank.dao;
 
 import by.clevertec.bank.exception.DaoException;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,46 +12,29 @@ import java.sql.SQLException;
  * The EntityTransaction class manages database transactions and provides methods for initializing, committing, and rolling
  * back transactions.
  */
+@Getter
 public class EntityTransaction implements AutoCloseable {
 
     private static final Logger logger = LogManager.getLogger();
     private Connection connection;
+    private final boolean isTransaction;
 
 
-    /**
-     * The function initializes a transaction by setting the auto commit to false.
-     */
-    public void initializeTransaction(AbstractDao... daos) throws DaoException {
-        try {
-            this.initialize(daos);
-            connection.setAutoCommit(false);
-        } catch (SQLException e) {
-            logger.error("Error while setting auto commit");
-        }
+
+    public EntityTransaction(Connection connection, boolean isTransaction) {
+        this.connection = connection;
+        this.isTransaction = isTransaction;
     }
 
-
-    /**
-     * The function initializes a connection to a database and sets the connection for each provided DAO.
-     */
-    public void initialize(AbstractDao... daos) throws DaoException {
-        if (connection == null) {
-            try {
-                connection = ConnectionPool.getInstance().getConnection();
-                for (AbstractDao dao : daos) {
-                    dao.setConnection(connection);
-                }
-            } catch (SQLException e) {
-                logger.error("error while getting connection from pool");
-                throw new DaoException(e);
-            }
-        }
-
+    public EntityTransaction(boolean isTransaction) {
+        this(null, isTransaction);
     }
+
 
     @Override
     public void close() throws DaoException {
         try {
+            connection.setAutoCommit(true);
             connection.close();
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -65,7 +49,9 @@ public class EntityTransaction implements AutoCloseable {
      */
     public void commit() {
         try {
-            connection.commit();
+            if (isTransaction) {
+                connection.commit();
+            }
         } catch (SQLException e) {
             logger.error("commit has been failed", e);
         }
@@ -77,9 +63,29 @@ public class EntityTransaction implements AutoCloseable {
      */
     public void rollback() {
         try {
-            connection.rollback();
+            if (isTransaction) {
+                connection.rollback();
+            }
         } catch (SQLException e) {
             logger.error("rollback has been failed", e);
         }
+    }
+
+    public boolean isTransaction() {
+        return isTransaction;
+    }
+
+    public Connection getConnection() throws DaoException {
+        try {
+            if (connection == null) {
+                connection = ConnectionPool.getInstance().getConnection();
+            }
+            connection.setAutoCommit(!isTransaction);
+        } catch (SQLException e) {
+            logger.error("error while getting connection from pool");
+            throw new DaoException(e);
+        }
+
+        return connection;
     }
 }

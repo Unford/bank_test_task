@@ -5,6 +5,7 @@ import by.clevertec.bank.dao.ColumnName;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.User;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,9 +23,9 @@ public class UserDaoImpl extends AbstractDao<User> {
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM users WHERE user_id = ?";
 
     @Override
-    public List<User> findAll() throws DaoException {
+    public List<User> findAll(Connection connection) throws DaoException {
         try {
-            return performStatement(FIND_ALL_QUERY, rs -> {
+            return performStatement(connection, FIND_ALL_QUERY, rs -> {
                 List<User> list = new ArrayList<>();
                 while (rs.next()) {
                     User v = mapEntity(rs);
@@ -39,9 +40,9 @@ public class UserDaoImpl extends AbstractDao<User> {
     }
 
     @Override
-    public Optional<User> findById(long id) throws DaoException {
+    public Optional<User> findById(Connection connection, long id) throws DaoException {
         try {
-            return Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_ID_QUERY,
+            return Optional.ofNullable(performPreparedExecuteQuery(connection, FIND_BY_ID_QUERY,
                     s -> s.setLong(1, id),
                     rs -> rs.next() ? mapFullEntity(rs) : null));
         } catch (SQLException e) {
@@ -51,12 +52,12 @@ public class UserDaoImpl extends AbstractDao<User> {
     }
 
     @Override
-    public User create(User entity) throws DaoException {
+    public User create(Connection connection, User entity) throws DaoException {
         try {
-            long id = performPreparedUpdateReturnId(CREATE_QUERY,
+            long id = performPreparedUpdateReturnId(connection, CREATE_QUERY,
                     s -> s.setString(1, entity.getFullName()));
             entity.setId(id);
-            return findById(id).orElse(entity);
+            return findById(connection, id).orElse(entity);
         } catch (SQLException e) {
             logger.error("Create user query error", e);
             throw new DaoException("Create user query error", e);
@@ -64,9 +65,9 @@ public class UserDaoImpl extends AbstractDao<User> {
     }
 
     @Override
-    public User update(User entity) throws DaoException {
+    public User update(Connection connection, User entity) throws DaoException {
         try {
-            performPreparedUpdateReturnRows(UPDATE_QUERY, s -> {
+            performPreparedUpdateReturnRows(connection, UPDATE_QUERY, s -> {
                 s.setString(1, entity.getFullName());
                 s.setLong(2, entity.getId());
             });
@@ -75,13 +76,13 @@ public class UserDaoImpl extends AbstractDao<User> {
             throw new DaoException("Update user query error", e);
 
         }
-        return findById(entity.getId()).orElse(entity);
+        return findById(connection, entity.getId()).orElse(entity);
     }
 
     @Override
-    public boolean deleteById(long id) throws DaoException {
+    public boolean deleteById(Connection connection, long id) throws DaoException {
         try {
-            return performPreparedUpdateReturnRows(DELETE_BY_ID_QUERY,
+            return performPreparedUpdateReturnRows(connection, DELETE_BY_ID_QUERY,
                     s -> s.setLong(1, id)) > 0;
         } catch (SQLException e) {
             logger.error("Delete user query error", e);
