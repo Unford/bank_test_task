@@ -1,23 +1,23 @@
 package by.clevertec.bank.controller.command.impl.get;
 
-import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.dto.TransactionDto;
-import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
+import by.clevertec.bank.service.AccountTransactionService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Collection;
 
-public class GetAllTransactionsByAccountIdCommand extends Command<Collection<TransactionDto>> {
+public class GetAllTransactionsByAccountIdCommand
+        extends Command<Collection<TransactionDto>, AccountTransactionService> {
     @Override
-    public Collection<TransactionDto> execute(HttpServletRequest request) throws CommandException {
-        AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
+    public Collection<TransactionDto> execute(HttpServletRequest request,
+                                              AccountTransactionService service) throws CommandException {
         try {
-            long id = Long.parseLong(request.getParameter(RequestParameter.ACCOUNT_ID));
+            long id = extractIdParameter(request);
             return service.findAllByAccountId(id);
-        }catch (NumberFormatException | ServiceException e){
+        } catch (ServiceException e) {
             logger.error(e);
             throw new CommandException(e);
         }

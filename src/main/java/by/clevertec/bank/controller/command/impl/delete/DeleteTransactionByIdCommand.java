@@ -1,24 +1,22 @@
 package by.clevertec.bank.controller.command.impl.delete;
 
-import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
-import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
+import by.clevertec.bank.service.AccountTransactionService;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * The DeleteTransactionByIdCommand class is a Java class that extends the Command class and is responsible for executing a
  * command to delete an account transaction by its ID.
  */
-public class DeleteTransactionByIdCommand extends Command<Boolean> {
+public class DeleteTransactionByIdCommand extends Command<Boolean, AccountTransactionService> {
     @Override
-    public Boolean execute(HttpServletRequest request) throws CommandException {
-        AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
+    public Boolean execute(HttpServletRequest request, AccountTransactionService service) throws CommandException {
         try {
-            long id = Long.parseLong(request.getParameter(RequestParameter.ID));
+            long id = extractIdParameter(request);
             return service.deleteById(id);
-        }catch (NumberFormatException | ServiceException e){
+        } catch (ServiceException e) {
             logger.error(e);
             throw new CommandException(e);
         }

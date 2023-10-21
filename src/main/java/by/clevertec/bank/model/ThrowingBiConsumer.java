@@ -1,4 +1,4 @@
-package by.clevertec.bank.dao;
+package by.clevertec.bank.model;
 
 @FunctionalInterface
 public interface ThrowingBiConsumer<T, V, E extends Exception> {

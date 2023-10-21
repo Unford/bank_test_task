@@ -9,13 +9,6 @@ import by.clevertec.bank.model.dto.CustomError;
 public class CommandException extends Exception {
     private int httpCode = CustomError.INTERNAL;
 
-    public CommandException() {
-        super();
-    }
-
-    public CommandException(String message) {
-        super(message);
-    }
 
     public CommandException(String message, int code) {
         super(message);
@@ -27,9 +20,14 @@ public class CommandException extends Exception {
         this.httpCode = code;
     }
 
+    public CommandException(int code, Throwable cause) {
+        super(cause);
+        this.httpCode = code;
+    }
+
     public CommandException(Throwable cause) {
         super(cause);
-        if (cause instanceof ServiceException serviceException){
+        if (cause instanceof ServiceException serviceException) {
             this.httpCode = serviceException.getHttpCode();
         }
     }

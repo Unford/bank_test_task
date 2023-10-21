@@ -13,11 +13,10 @@ import javax.validation.groups.Default;
 /**
  * The UpdateUserByIdCommand class is a Java class that updates a user by their ID using data from an HTTP request.
  */
-public class UpdateUserByIdCommand extends Command<UserDto> {
+public class UpdateUserByIdCommand extends Command<UserDto, UserServiceImpl> {
     @Override
-    public UserDto execute(HttpServletRequest request) throws CommandException {
+    public UserDto execute(HttpServletRequest request, UserServiceImpl service) throws CommandException {
         try {
-            UserServiceImpl service = UserServiceImpl.getInstance();
             UserDto dto = readBody(request, UserDto.class);
             validate(dto, UpdateValidationGroup.class, Default.class);
             return service.update(dto);

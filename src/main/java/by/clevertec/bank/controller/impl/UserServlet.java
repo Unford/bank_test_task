@@ -2,8 +2,11 @@ package by.clevertec.bank.controller.impl;
 
 import by.clevertec.bank.controller.AbstractHttpServlet;
 import by.clevertec.bank.controller.RequestParameter;
+import by.clevertec.bank.controller.ServiceName;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.controller.command.CommandType;
+import by.clevertec.bank.service.CrudService;
+import by.clevertec.bank.service.impl.UserServiceImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +20,13 @@ import java.io.IOException;
  */
 @WebServlet(name = "user", value = "/users")
 public class UserServlet extends AbstractHttpServlet {
+    private transient UserServiceImpl service;
+
+    @Override
+    public void init() {
+        service = (UserServiceImpl) getServletContext().getAttribute(ServiceName.USER_SERVICE);
+    }
+
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         processCommand(CommandType.UPDATE_USER_BY_ID.getCommand(), req, resp);
@@ -41,8 +51,14 @@ public class UserServlet extends AbstractHttpServlet {
         processCommand(CommandType.CREATE_USER.getCommand(), req, resp);
     }
 
+
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         processCommand(CommandType.DELETE_USER_BY_ID.getCommand(), req, resp);
+    }
+
+    @Override
+    public CrudService<?> getBusinessService() {
+        return service;
     }
 }

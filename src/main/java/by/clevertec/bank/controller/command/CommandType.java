@@ -63,18 +63,18 @@ public enum CommandType {
      * command type
      */
     private static final Logger logger = LogManager.getLogger();
-    private final Command<?> command;
+    private final Command<?, ?> command;
     private final String path;
 
     private final String method;
 
-    CommandType(Command<?> command, String path, String method) {
+    CommandType(Command<?,?> command, String path, String method) {
         this.command = command;
         this.path = path;
         this.method = method;
     }
 
-    CommandType(Command<?> command) {
+    CommandType(Command<?,?> command) {
         this(command, "", "");
     }
 

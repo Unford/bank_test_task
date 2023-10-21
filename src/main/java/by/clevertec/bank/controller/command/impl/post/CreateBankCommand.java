@@ -12,11 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
  * The CreateBankCommand class is a Java class that extends the Command class and is responsible for executing the creation
  * of a bank using the BankServiceImpl class.
  */
-public class CreateBankCommand extends Command<BankDto> {
+public class CreateBankCommand extends Command<BankDto, BankServiceImpl> {
     @Override
-    public BankDto execute(HttpServletRequest request) throws CommandException {
+    public BankDto execute(HttpServletRequest request, BankServiceImpl service) throws CommandException {
         try {
-            BankServiceImpl service = BankServiceImpl.getInstance();
             BankDto dto = readBody(request, BankDto.class);
             validate(dto, CreateValidationGroup.class);
             return service.create(dto);
