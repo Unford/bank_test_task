@@ -25,10 +25,10 @@ import java.time.format.DateTimeFormatter;
  */
 public final class PdfFileUtils {
     private static final Logger logger = LogManager.getLogger();
-    private static final String CHECK_PATH = "check";
-    private static final String ACCOUNT_EXTRACT_PATH = "bank-extract";
+    public static final String CHECK_PATH = "check";
+    public static final String ACCOUNT_EXTRACT_PATH = "bank-extract";
 
-    private static final String ACCOUNT_STATEMENT_PATH = "statement-money";
+    public static final String ACCOUNT_STATEMENT_PATH = "statement-money";
 
     private static final String CHECK_PATH_PATTERN = CHECK_PATH + "/check_#-%d.pdf";
     private static final String ACCOUNT_EXTRACT_PATTERN = ACCOUNT_EXTRACT_PATH + "/%s-extract-%s-%s.pdf";
@@ -58,17 +58,17 @@ public final class PdfFileUtils {
      * The function saves an account transaction as a PDF check file.
      *
      * @param transaction The "transaction" parameter is an instance of the "AccountTransaction" class. It represents a
-     * transaction made between two bank accounts.
+     *                    transaction made between two bank accounts.
      */
-    public static void saveCheck(AccountTransaction transaction) {
+    public static File saveCheck(AccountTransaction transaction) {
         File directory = new File(CHECK_PATH);
         if (!directory.exists()) {
             directory.mkdir();
         }
-
+        File file = new File(CHECK_PATH_PATTERN.formatted(transaction.getId()));
         Document document = new Document();
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(CHECK_PATH_PATTERN.formatted(transaction.getId())));
+            PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
             PdfPTable table = new PdfPTable(2);
@@ -98,12 +98,13 @@ public final class PdfFileUtils {
             table.addCell(transaction.getSum().toString() + " BYN");
 
             document.add(table);
+
         } catch (DocumentException | FileNotFoundException e) {
             logger.error("Can not save check file {}", transaction.getId(), e);
         } finally {
             document.close();
         }
-
+        return file;
 
     }
 
@@ -147,21 +148,23 @@ public final class PdfFileUtils {
      * transaction details.
      *
      * @param statementDto The `statementDto` parameter is an object of type `AccountExtractDto`. It contains information
-     * about the account extract, including the account details, date range, balance, and a list of transactions.
+     *                     about the account extract, including the account details, date range, balance, and a list of transactions.
      */
-    public static void saveAccountExtract(AccountExtractDto statementDto) {
+    public static File saveAccountExtract(AccountExtractDto statementDto) {
         File directory = new File(ACCOUNT_EXTRACT_PATH);
         if (!directory.exists()) {
             directory.mkdir();
         }
 
         Document document = new Document();
+        File file = new File(ACCOUNT_EXTRACT_PATTERN
+                .formatted(statementDto.getAccount().getId(),
+                        statementDto.getFrom().toString(),
+                        statementDto.getTo().toString()
+                ));
+
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(ACCOUNT_EXTRACT_PATTERN
-                    .formatted(statementDto.getAccount().getId(),
-                            statementDto.getFrom().toString(),
-                            statementDto.getTo().toString()
-                    )));
+            PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
 
             PdfPTable table = createAccountInfoTable("Account extract", statementDto.getAccount(),
@@ -211,7 +214,7 @@ public final class PdfFileUtils {
         } finally {
             document.close();
         }
-
+        return file;
 
     }
 
@@ -219,22 +222,23 @@ public final class PdfFileUtils {
      * The function `saveAccountStatement` saves an account statement as a PDF file.
      *
      * @param statementDto The `statementDto` parameter is an object of type `AccountStatementDto`. It contains information
-     * about the account statement that needs to be saved. The `AccountStatementDto` class likely has properties such as
-     * `account`, `from`, `to`, and `money`, which hold the relevant data for
+     *                     about the account statement that needs to be saved. The `AccountStatementDto` class likely has properties such as
+     *                     `account`, `from`, `to`, and `money`, which hold the relevant data for
      */
-    public static void saveAccountStatement(AccountStatementDto statementDto) {
+    public static File saveAccountStatement(AccountStatementDto statementDto) {
         File directory = new File(ACCOUNT_STATEMENT_PATH);
         if (!directory.exists()) {
             directory.mkdir();
         }
 
         Document document = new Document();
+        File file = new File(ACCOUNT_STATEMENT_PATTERN
+                .formatted(statementDto.getAccount().getId(),
+                        statementDto.getFrom().toString(),
+                        statementDto.getTo().toString()
+                ));
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(ACCOUNT_STATEMENT_PATTERN
-                    .formatted(statementDto.getAccount().getId(),
-                            statementDto.getFrom().toString(),
-                            statementDto.getTo().toString()
-                    )));
+            PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
             PdfPTable table = createAccountInfoTable("Money statement", statementDto.getAccount(),
                     statementDto.getFrom(), statementDto.getTo(), statementDto.getMoney().getBalance());
@@ -254,5 +258,6 @@ public final class PdfFileUtils {
         } finally {
             document.close();
         }
+        return file;
     }
 }

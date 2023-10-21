@@ -1,15 +1,14 @@
 package by.clevertec.bank.service.impl;
 
-import by.clevertec.bank.dao.EntityTransaction;
 import by.clevertec.bank.dao.impl.AccountDaoImpl;
 import by.clevertec.bank.dao.impl.AccountTransactionDaoIml;
 import by.clevertec.bank.dao.impl.BankDaoImpl;
 import by.clevertec.bank.dao.impl.UserDaoImpl;
-import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
 import by.clevertec.bank.model.dto.*;
+import by.clevertec.bank.service.AbstractService;
 import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.util.DataMapper;
 import by.clevertec.bank.util.PdfFileUtils;
@@ -23,203 +22,156 @@ import java.util.Optional;
  * The `AccountServiceImpl` class is a Java implementation of the `AccountService` interface that provides various methods
  * for managing and manipulating account data.
  */
-public final class AccountServiceImpl implements AccountService {
+public class AccountServiceImpl extends AbstractService<AccountDto> implements AccountService {
     private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100L);
+    private final AccountTransactionDaoIml transactionDao;
+    private final AccountDaoImpl accountDao;
+    private final BankDaoImpl bankDao;
+    private final UserDaoImpl userDao;
+    private final ModelMapper modelMapper;
 
-
-    private AccountServiceImpl() {
+    public AccountServiceImpl(AccountTransactionDaoIml transactionDao,
+                              AccountDaoImpl accountDao,
+                              BankDaoImpl bankDao,
+                              UserDaoImpl userDao,
+                              ModelMapper modelMapper) {
+        this.transactionDao = transactionDao;
+        this.accountDao = accountDao;
+        this.bankDao = bankDao;
+        this.userDao = userDao;
+        this.modelMapper = modelMapper;
     }
 
-    private static final AccountServiceImpl instance = new AccountServiceImpl();
-
-    public static AccountServiceImpl getInstance() {
-        return instance;
+    public AccountServiceImpl() {
+        this.transactionDao = new AccountTransactionDaoIml();
+        this.accountDao = new AccountDaoImpl();
+        this.bankDao = new BankDaoImpl();
+        this.userDao = new UserDaoImpl();
+        this.modelMapper = DataMapper.getModelMapper();
     }
-
 
     @Override
     public void accrueIncome(int percent) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            AccountTransactionDaoIml transactionDao = new AccountTransactionDaoIml();
-            transaction.initializeTransaction(accountDao, transactionDao);
-            List<Account> accounts = accountDao.findAllAccrual();
+        executeInTransactionalContext(true, (connection -> {
+            List<Account> accounts = accountDao.findAllAccrual(connection);
             for (Account a : accounts) {
                 logger.debug("accrue income -  {}", a);
-                BigDecimal s = accountDao.sumAllByAccountId(a.getId());
+                BigDecimal s = accountDao.sumAllByAccountId(connection, a.getId());
                 if (s.signum() == 1) {
-                    transactionDao.create(AccountTransaction.builder()
-                            .sum(s.multiply(BigDecimal.valueOf(percent)).divide(ONE_HUNDRED))
-                            .to(a).build());
+                    transactionDao.create(connection, AccountTransaction.builder()
+                            .sum(s.multiply(BigDecimal.valueOf(percent))
+                                    .divide(ONE_HUNDRED))
+                            .to(a)
+                            .build());
                 }
-                accountDao.updateLastAccrualDate(a);
+                accountDao.updateLastAccrualDate(connection, a);
             }
-            transaction.commit();
-        } catch (DaoException e) {
-            transaction.rollback();
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+        }));
     }
 
     @Override
     public BigDecimal getAccountBalance(long id) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            transaction.initialize(accountDao);
-            accountDao.findById(id).orElseThrow(() ->
+        return executeInTransactionalContext(connection -> {
+            accountDao.findById(connection, id).orElseThrow(() ->
                     new ServiceException("Account is not found", CustomError.NOT_FOUND));
-            return accountDao.sumAllByAccountId(id);
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+            return accountDao.sumAllByAccountId(connection, id);
+        });
     }
 
     @Override
     public AccountExtractDto getAccountExtract(AccountExtractDto extractDto) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
-            transaction.initialize(accountDao, transactionDaoIml);
+        AccountExtractDto accountExtractDto = executeInTransactionalContext(connection -> {
             Long id = extractDto.getAccount().getId();
-            Account account = accountDao.findById(id)
+            Account account = accountDao.findById(connection, id)
                     .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
-            AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
+            AccountDto accountDto = modelMapper.map(account, AccountDto.class);
             extractDto.setAccount(accountDto);
-            extractDto.setBalance(accountDao.sumAllByAccountId(id));
-            extractDto.setTransactions(transactionDaoIml.findAllByIdAndBetweenDates(id,
+            extractDto.setBalance(accountDao.sumAllByAccountId(connection, id));
+            extractDto.setTransactions(transactionDao.findAllByIdAndBetweenDates(connection, id,
                             extractDto.getFrom(), extractDto.getTo())
-                    .stream().map(v -> DataMapper.getModelMapper().map(v, TransactionDto.class)).toList());
-            PdfFileUtils.saveAccountExtract(extractDto);
+                    .stream().map(v -> modelMapper.map(v, TransactionDto.class)).toList());
             return extractDto;
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+        });
+        PdfFileUtils.saveAccountExtract(accountExtractDto);
+        return accountExtractDto;
     }
 
     @Override
     public AccountStatementDto getAccountStatement(AccountStatementDto statementDto) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
-            transaction.initialize(accountDao, transactionDaoIml);
+        AccountStatementDto performed = executeInTransactionalContext(connection -> {
             Long id = statementDto.getAccount().getId();
-            Account account = accountDao.findById(id)
+            Account account = accountDao.findById(connection, id)
                     .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
-            AccountDto accountDto = DataMapper.getModelMapper().map(account, AccountDto.class);
+            AccountDto accountDto = modelMapper.map(account, AccountDto.class);
             statementDto.setAccount(accountDto);
-            statementDto.setMoney(accountDao.calculateMoneyDataAllByIdAndBetweenDates(id,
+            statementDto.setMoney(accountDao.calculateMoneyDataAllByIdAndBetweenDates(connection, id,
                     statementDto.getFrom(), statementDto.getTo()));
-            PdfFileUtils.saveAccountStatement(statementDto);
             return statementDto;
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+        });
+        PdfFileUtils.saveAccountStatement(performed);
+        return performed;
     }
 
     @Override
     public List<AccountDto> findAll() throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            transaction.initialize(accountDao);
-            ModelMapper modelMapper = DataMapper.getModelMapper();
-            return accountDao.findAll().stream()
-                    .map(e -> modelMapper.map(e, AccountDto.class)).toList();
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+        return executeInTransactionalContext(connection -> accountDao.findAll(connection).stream()
+                .map(e -> modelMapper.map(e, AccountDto.class)).toList());
     }
 
     @Override
     public AccountDto findById(long id) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            transaction.initialize(accountDao);
-            ModelMapper modelMapper = DataMapper.getModelMapper();
-            return modelMapper.map(accountDao.findById(id)
+        return executeInTransactionalContext(connection -> {
+            return modelMapper.map(accountDao.findById(connection, id)
                             .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND)),
                     AccountDto.class);
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+        });
+
     }
 
     @Override
     public boolean deleteById(long id) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            AccountTransactionDaoIml transactionDaoIml = new AccountTransactionDaoIml();
-            transaction.initialize(accountDao, transactionDaoIml);
-            Account account = accountDao.findById(id)
+        return executeInTransactionalContext(connection -> {
+            Account account = accountDao.findById(connection, id)
                     .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
-            if (!transactionDaoIml.findAllByAccount(account.getAccount()).isEmpty()) {
+            if (!transactionDao.findAllByAccount(connection, account.getAccount()).isEmpty()) {
                 throw new ServiceException("Conflict account has transactions", CustomError.CONFLICT);
             }
-            return accountDao.deleteById(id);
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
+            return accountDao.deleteById(connection, id);
+        });
     }
 
     @Override
     public AccountDto create(AccountDto dto) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            BankDaoImpl bankDao = new BankDaoImpl();
-            UserDaoImpl userDao = new UserDaoImpl();
-            transaction.initialize(accountDao, bankDao, userDao);
-            bankDao.findById(dto.getBank().getId())
+        return executeInTransactionalContext(connection -> {
+            bankDao.findById(connection, dto.getBank().getId())
                     .orElseThrow(() -> new ServiceException("Bank is not found", CustomError.NOT_FOUND));
-            userDao.findById(dto.getUser().getId())
+            userDao.findById(connection, dto.getUser().getId())
                     .orElseThrow(() -> new ServiceException("User is not found", CustomError.NOT_FOUND));
-            if (accountDao.findByAccountOrBankAndUser(dto.getAccount(),
+            if (accountDao.findByAccountOrBankAndUser(connection, dto.getAccount(),
                     dto.getBank().getId(), dto.getUser().getId()).isPresent()) {
                 throw new ServiceException("Account already exist!", CustomError.CONFLICT);
             } else {
-                Account account = accountDao.create(DataMapper.getModelMapper().map(dto, Account.class));
-                return DataMapper.getModelMapper().map(account, AccountDto.class);
+                Account account = accountDao.create(connection, modelMapper.map(dto, Account.class));
+                return modelMapper.map(account, AccountDto.class);
             }
+        });
 
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
     }
 
     @Override
     public AccountDto update(AccountDto dto) throws ServiceException {
-        EntityTransaction transaction = new EntityTransaction();
-        try (transaction) {
-            AccountDaoImpl accountDao = new AccountDaoImpl();
-            transaction.initialize(accountDao);
-            accountDao.findById(dto.getId())
+        return executeInTransactionalContext(connection -> {
+            accountDao.findById(connection, dto.getId())
                     .orElseThrow(() -> new ServiceException("Account is not found", CustomError.NOT_FOUND));
             Optional<Account> optionalAccount = accountDao
-                    .findByAccountOrBankAndUser(dto.getAccount(), 0, 0);
+                    .findByAccountOrBankAndUser(connection, dto.getAccount(), 0, 0);
             if (optionalAccount.isPresent() && !optionalAccount.get().getId().equals(dto.getId())) {
                 throw new ServiceException("Account already exist!", CustomError.CONFLICT);
             } else {
-                Account account = accountDao.update(DataMapper.getModelMapper().map(dto, Account.class));
-                return DataMapper.getModelMapper().map(account, AccountDto.class);
+                Account account = accountDao.update(connection, modelMapper.map(dto, Account.class));
+                return modelMapper.map(account, AccountDto.class);
             }
+        });
 
-        } catch (DaoException e) {
-            logger.error(e);
-            throw new ServiceException(e);
-        }
     }
 }
