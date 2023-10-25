@@ -2,10 +2,7 @@ package by.clevertec.bank.model.dto;
 
 import by.clevertec.bank.model.validation.CreateAccountValidationGroup;
 import by.clevertec.bank.model.validation.UpdateValidationGroup;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.Valid;

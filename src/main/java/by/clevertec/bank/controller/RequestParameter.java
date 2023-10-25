@@ -29,7 +29,6 @@ public final class RequestParameter {
      * The constant DATE_TO.
      */
     public static final String DATE_TO = "to";
-    public static final String ACCOUNT_ID = "account_id";
 
 
 

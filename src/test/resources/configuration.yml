@@ -1,0 +1,9 @@
+database:
+  username: root
+  password: root
+  dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
+  databaseName: bank
+  portNumber: 5237
+  serverName: localhost
+business:
+  monthAccrual: 5

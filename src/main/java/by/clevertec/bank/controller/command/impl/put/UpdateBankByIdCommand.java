@@ -14,11 +14,10 @@ import javax.validation.groups.Default;
  * The UpdateBankByIdCommand class is a Java class that extends the Command class and is responsible for executing the
  * update operation on a bank entity based on its ID.
  */
-public class UpdateBankByIdCommand extends Command<BankDto> {
+public class UpdateBankByIdCommand extends Command<BankDto, BankServiceImpl> {
     @Override
-    public BankDto execute(HttpServletRequest request) throws CommandException {
+    public BankDto execute(HttpServletRequest request, BankServiceImpl service) throws CommandException {
         try {
-            BankServiceImpl service = BankServiceImpl.getInstance();
             BankDto dto = readBody(request, BankDto.class);
             validate(dto, UpdateValidationGroup.class, Default.class);
             return service.update(dto);

@@ -5,7 +5,7 @@ import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.dto.CustomError;
 import by.clevertec.bank.model.dto.TransactionDto;
-import by.clevertec.bank.service.impl.AccountTransactionServiceImpl;
+import by.clevertec.bank.service.AccountTransactionService;
 import by.clevertec.bank.model.validation.TransferValidationGroup;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -15,11 +15,10 @@ import javax.validation.groups.Default;
  * The TransferCommand class is a Java class that extends the Command class and is responsible for executing a transfer of
  * money between two accounts.
  */
-public class TransferCommand extends Command<TransactionDto> {
+public class TransferCommand extends Command<TransactionDto, AccountTransactionService> {
     @Override
-    public TransactionDto execute(HttpServletRequest request) throws CommandException {
+    public TransactionDto execute(HttpServletRequest request, AccountTransactionService service) throws CommandException {
         try {
-            AccountTransactionServiceImpl service = AccountTransactionServiceImpl.getInstance();
             TransactionDto transactionDto = readBody(request, TransactionDto.class);
             if (transactionDto.getTo().getId().equals(transactionDto.getFrom().getId())){
                 throw new CommandException("to.id can not be equals from.id", CustomError.BAD_REQUEST);

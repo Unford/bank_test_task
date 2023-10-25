@@ -61,6 +61,7 @@ public final class AppConfiguration {
     @AllArgsConstructor
     @NoArgsConstructor
     @ToString
+    @EqualsAndHashCode
     public static final class DatabaseConfig {
         private String databaseName;
         private String portNumber;
@@ -74,6 +75,7 @@ public final class AppConfiguration {
     @AllArgsConstructor
     @NoArgsConstructor
     @ToString
+    @EqualsAndHashCode
     public static final class BusinessConfig {
         private int monthAccrual;
     }

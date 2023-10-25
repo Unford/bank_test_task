@@ -13,10 +13,9 @@ import java.util.Collection;
  * The `GetAllUsersCommand` class is a Java class that extends the `Command` class and is responsible for executing a
  * command to retrieve all users from a service.
  */
-public class GetAllUsersCommand extends Command<Collection<UserDto>> {
+public class GetAllUsersCommand extends Command<Collection<UserDto>, UserServiceImpl> {
     @Override
-    public Collection<UserDto> execute(HttpServletRequest request) throws CommandException {
-        UserServiceImpl service = UserServiceImpl.getInstance();
+    public Collection<UserDto> execute(HttpServletRequest request, UserServiceImpl service) throws CommandException {
         try {
             return service.findAll();
         } catch (ServiceException e) {

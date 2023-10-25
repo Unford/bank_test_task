@@ -13,10 +13,9 @@ import java.util.Collection;
  * The `GetAllBanksCommand` class is a Java command that retrieves all banks from a service and returns them as a
  * collection of `BankDto` objects.
  */
-public class GetAllBanksCommand extends Command<Collection<BankDto>> {
+public class GetAllBanksCommand extends Command<Collection<BankDto>, BankServiceImpl> {
     @Override
-    public Collection<BankDto> execute(HttpServletRequest request) throws CommandException {
-        BankServiceImpl service = BankServiceImpl.getInstance();
+    public Collection<BankDto> execute(HttpServletRequest request, BankServiceImpl service) throws CommandException {
         try {
             return service.findAll();
         } catch (ServiceException e) {

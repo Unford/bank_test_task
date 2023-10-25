@@ -5,6 +5,7 @@ import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.model.dto.AccountDto;
 import by.clevertec.bank.model.validation.CreateAccountValidationGroup;
+import by.clevertec.bank.service.AccountService;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -13,11 +14,10 @@ import jakarta.servlet.http.HttpServletRequest;
  * validating the account data, and calling the create method of the AccountServiceImpl class.
  */
 
-public class CreateAccountCommand extends Command<AccountDto> {
+public class CreateAccountCommand extends Command<AccountDto, AccountService> {
     @Override
-    public AccountDto execute(HttpServletRequest request) throws CommandException {
+    public AccountDto execute(HttpServletRequest request, AccountService service) throws CommandException {
         try {
-            AccountServiceImpl service = AccountServiceImpl.getInstance();
             AccountDto dto = readBody(request, AccountDto.class);
             validate(dto, CreateAccountValidationGroup.class);
             return service.create(dto);

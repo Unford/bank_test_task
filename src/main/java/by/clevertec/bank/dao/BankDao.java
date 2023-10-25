@@ -3,6 +3,7 @@ package by.clevertec.bank.dao;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.Bank;
 
+import java.sql.Connection;
 import java.util.Optional;
 
 /**
@@ -11,5 +12,5 @@ import java.util.Optional;
  * interface is likely used for accessing and manipulating data related to banks in a banking application.
  */
 public interface BankDao {
-    Optional<Bank> findByName(String name) throws DaoException;
+    Optional<Bank> findByName(Connection connection,String name) throws DaoException;
 }

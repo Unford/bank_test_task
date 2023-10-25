@@ -6,6 +6,7 @@ import by.clevertec.bank.dao.ColumnName;
 import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.model.domain.Bank;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM banks WHERE bank_id = ?";
 
     @Override
-    public List<Bank> findAll() throws DaoException {
+    public List<Bank> findAll(Connection connection) throws DaoException {
         try {
-            return performStatement(FIND_ALL_QUERY, rs -> {
+            return performStatement(connection, FIND_ALL_QUERY, rs -> {
                 List<Bank> list = new ArrayList<>();
                 while (rs.next()) {
                     Bank v = mapEntity(rs);
@@ -44,9 +45,9 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     }
 
     @Override
-    public Optional<Bank> findById(long id) throws DaoException {
+    public Optional<Bank> findById(Connection connection, long id) throws DaoException {
         try {
-            return Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_ID_QUERY,
+            return Optional.ofNullable(performPreparedExecuteQuery(connection, FIND_BY_ID_QUERY,
                     s -> s.setLong(1, id),
                     rs -> rs.next() ? mapFullEntity(rs) : null));
         } catch (SQLException e) {
@@ -57,11 +58,11 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     }
 
     @Override
-    public Bank create(Bank entity) throws DaoException {
+    public Bank create(Connection connection, Bank entity) throws DaoException {
         try {
-            long id = performPreparedUpdateReturnId(CREATE_QUERY, s -> s.setString(1, entity.getName()));
+            long id = performPreparedUpdateReturnId(connection, CREATE_QUERY, s -> s.setString(1, entity.getName()));
             entity.setId(id);
-            return findById(id).orElse(entity);
+            return findById(connection, id).orElse(entity);
         } catch (SQLException e) {
             logger.error("Create bank query error", e);
             throw new DaoException("Create bank query error", e);
@@ -69,9 +70,9 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     }
 
     @Override
-    public Bank update(Bank entity) throws DaoException {
+    public Bank update(Connection connection, Bank entity) throws DaoException {
         try {
-            performPreparedUpdateReturnRows(UPDATE_QUERY, s -> {
+            performPreparedUpdateReturnRows(connection, UPDATE_QUERY, s -> {
                 s.setString(1, entity.getName());
                 s.setLong(2, entity.getId());
             });
@@ -80,13 +81,13 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
             throw new DaoException("Update bank query error", e);
 
         }
-        return findById(entity.getId()).orElse(entity);
+        return findById(connection, entity.getId()).orElse(entity);
     }
 
     @Override
-    public boolean deleteById(long id) throws DaoException {
+    public boolean deleteById(Connection connection, long id) throws DaoException {
         try {
-            return performPreparedUpdateReturnRows(DELETE_BY_ID_QUERY,
+            return performPreparedUpdateReturnRows(connection, DELETE_BY_ID_QUERY,
                     s -> s.setLong(1, id)) > 0;
         } catch (SQLException e) {
             logger.error("Delete bank query error", e);
@@ -109,10 +110,10 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
 
 
     @Override
-    public Optional<Bank> findByName(String name) throws DaoException {
+    public Optional<Bank> findByName(Connection connection, String name) throws DaoException {
         Optional<Bank> bank;
         try {
-            bank = Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_NAME_QUERY,
+            bank = Optional.ofNullable(performPreparedExecuteQuery(connection, FIND_BY_NAME_QUERY,
                     s -> s.setString(1, name),
                     rs -> rs.next() ? mapFullEntity(rs) : null));
         } catch (SQLException e) {

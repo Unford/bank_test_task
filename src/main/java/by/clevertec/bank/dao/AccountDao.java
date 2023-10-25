@@ -5,6 +5,7 @@ import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.dto.MoneyStatsDto;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,14 +20,14 @@ public interface AccountDao {
      * @param id The id parameter is a Long value representing the account id.
      * @return The method is returning a BigDecimal value.
      */
-    BigDecimal sumAllByAccountId(Long id) throws DaoException;
+    BigDecimal sumAllByAccountId(Connection connection, Long id) throws DaoException;
 
     /**
      * The function returns a list of Account objects representing all accruals.
      *
      * @return The method is returning a list of Account objects.
      */
-    List<Account> findAllAccrual() throws DaoException;
+    List<Account> findAllAccrual(Connection connection) throws DaoException;
 
     /**
      * The function updates the last accrual date of an account and throws a DaoException if there is an error.
@@ -35,7 +36,7 @@ public interface AccountDao {
      *                number, balance, and last accrual date.
      * @return The method is returning the last accrual date of the account.
      */
-    Account updateLastAccrualDate(Account account) throws DaoException;
+    Account updateLastAccrualDate(Connection connection, Account account) throws DaoException;
 
     /**
      * The function calculates money statistics for a specific ID within a given date range.
@@ -46,7 +47,7 @@ public interface AccountDao {
      *             to calculate money data.
      * @return The method returns a MoneyStatsDto object.
      */
-    MoneyStatsDto calculateMoneyDataAllByIdAndBetweenDates(Long id, LocalDate from, LocalDate to) throws DaoException;
+    MoneyStatsDto calculateMoneyDataAllByIdAndBetweenDates(Connection connection, Long id, LocalDate from, LocalDate to) throws DaoException;
 
     /**
      * The function findByAccountOrBankAndUser searches for an account based on the account number, bank ID, and user ID.
@@ -56,7 +57,7 @@ public interface AccountDao {
      * @param userId The ID of the user for which the account is being searched.
      * @return The method is returning an Optional object that contains an Account.
      */
-    Optional<Account> findByAccountOrBankAndUser(String acc, long bankId, long userId) throws DaoException;
+    Optional<Account> findByAccountOrBankAndUser(Connection connection, String acc, long bankId, long userId) throws DaoException;
 
 
     /**
@@ -65,7 +66,7 @@ public interface AccountDao {
      * @param id The id parameter is a long value representing the bank id.
      * @return The method is returning a list of objects.
      */
-    List<Account> findAllByBankId(long id) throws DaoException;
+    List<Account> findAllByBankId(Connection connection, long id) throws DaoException;
 
     /**
      * The function returns a list of accounts associated with a specific user ID.
@@ -73,5 +74,5 @@ public interface AccountDao {
      * @param id The id parameter is a long value representing the user id.
      * @return The method is returning a list of Account objects.
      */
-    List<Account> findAllByUserId(long id) throws DaoException;
+    List<Account> findAllByUserId(Connection connection, long id) throws DaoException;
 }

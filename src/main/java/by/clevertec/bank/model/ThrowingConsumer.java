@@ -1,4 +1,4 @@
-package by.clevertec.bank.dao;
+package by.clevertec.bank.model;
 
 @FunctionalInterface
 public interface ThrowingConsumer<T, E extends Exception> {

@@ -1,6 +1,5 @@
 package by.clevertec.bank.controller.command.impl.get;
 
-import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
@@ -12,14 +11,13 @@ import jakarta.servlet.http.HttpServletRequest;
  * The `GetUserByIdCommand` class is a Java class that extends the `Command` class and is responsible for executing a
  * command to retrieve a user by their ID.
  */
-public class GetUserByIdCommand extends Command<UserDto> {
+public class GetUserByIdCommand extends Command<UserDto, UserServiceImpl> {
     @Override
-    public UserDto execute(HttpServletRequest request) throws CommandException {
-        UserServiceImpl service = UserServiceImpl.getInstance();
+    public UserDto execute(HttpServletRequest request, UserServiceImpl service) throws CommandException {
         try {
-            long id = Long.parseLong(request.getParameter(RequestParameter.ID));
+            long id = extractIdParameter(request);
             return service.findById(id);
-        }catch (NumberFormatException | ServiceException e){
+        } catch (ServiceException e) {
             logger.error(e);
             throw new CommandException(e);
         }

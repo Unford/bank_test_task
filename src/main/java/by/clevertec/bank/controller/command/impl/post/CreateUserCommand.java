@@ -12,11 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
  * The `CreateUserCommand` class is a Java class that extends the `Command` class and is responsible for creating a new
  * user by executing the necessary operations.
  */
-public class CreateUserCommand extends Command<UserDto> {
+public class CreateUserCommand extends Command<UserDto, UserServiceImpl> {
     @Override
-    public UserDto execute(HttpServletRequest request) throws CommandException {
+    public UserDto execute(HttpServletRequest request, UserServiceImpl service) throws CommandException {
         try {
-            UserServiceImpl service = UserServiceImpl.getInstance();
             UserDto dto = readBody(request, UserDto.class);
             validate(dto, CreateValidationGroup.class);
             return service.create(dto);

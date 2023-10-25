@@ -1,6 +1,5 @@
 package by.clevertec.bank.controller.command.impl.get;
 
-import by.clevertec.bank.controller.RequestParameter;
 import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.exception.CommandException;
 import by.clevertec.bank.exception.ServiceException;
@@ -12,14 +11,13 @@ import jakarta.servlet.http.HttpServletRequest;
  * The GetBankByIdCommand class is a Java class that retrieves a bank by its ID from a service and returns it as a BankDto
  * object.
  */
-public class GetBankByIdCommand extends Command<BankDto> {
+public class GetBankByIdCommand extends Command<BankDto, BankServiceImpl> {
     @Override
-    public BankDto execute(HttpServletRequest request) throws CommandException {
-        BankServiceImpl service = BankServiceImpl.getInstance();
+    public BankDto execute(HttpServletRequest request, BankServiceImpl service) throws CommandException {
         try {
-            long id = Long.parseLong(request.getParameter(RequestParameter.ID));
+            long id = extractIdParameter(request);
             return service.findById(id);
-        }catch (NumberFormatException | ServiceException e){
+        } catch (ServiceException e) {
             logger.error(e);
             throw new CommandException(e);
         }

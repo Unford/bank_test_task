@@ -93,9 +93,9 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
 
     @Override
-    public List<Account> findAll() throws DaoException {
+    public List<Account> findAll(Connection connection) throws DaoException {
         try {
-            return performStatement(FIND_ALL_QUERY, rs -> {
+            return performStatement(connection, FIND_ALL_QUERY, rs -> {
                 List<Account> list = new ArrayList<>();
                 while (rs.next()) {
                     Account v = mapEntity(rs);
@@ -111,10 +111,10 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public Optional<Account> findById(long id) throws DaoException {
+    public Optional<Account> findById(Connection connection, long id) throws DaoException {
         Optional<Account> account;
         try {
-            account = Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_ID_QUERY,
+            account = Optional.ofNullable(performPreparedExecuteQuery(connection, FIND_BY_ID_QUERY,
                     s -> s.setLong(1, id),
                     rs -> rs.next() ? mapFullEntity(rs) : null));
         } catch (SQLException e) {
@@ -125,19 +125,19 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public Account create(Account entity) throws DaoException {
+    public Account create(Connection connection, Account entity) throws DaoException {
         LocalDate now = LocalDate.now();
         entity.setOpenDate(now);
         entity.setLastAccrualDate(now);
         try {
-            long id = performPreparedUpdateReturnId(CREATE_QUERY, s -> {
+            long id = performPreparedUpdateReturnId(connection, CREATE_QUERY, s -> {
                 s.setString(1, entity.getAccount());
                 s.setDate(2, Date.valueOf(entity.getOpenDate()));
                 s.setDate(3, Date.valueOf(entity.getLastAccrualDate()));
                 s.setLong(4, entity.getBank().getId());
                 s.setLong(5, entity.getUser().getId());
             });
-            return findById(id).orElse(entity);
+            return findById(connection, id).orElse(entity);
         } catch (SQLException e) {
             logger.error("Create account query error", e);
             throw new DaoException("Create account query error", e);
@@ -146,9 +146,9 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public Account update(Account entity) throws DaoException {
+    public Account update(Connection connection, Account entity) throws DaoException {
         try {
-            performPreparedUpdateReturnRows(UPDATE_QUERY, s -> {
+            performPreparedUpdateReturnRows(connection, UPDATE_QUERY, s -> {
                 s.setString(1, entity.getAccount());
                 s.setLong(2, entity.getId());
             });
@@ -157,14 +157,14 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             throw new DaoException("Update account query error", e);
 
         }
-        return findById(entity.getId()).orElse(entity);
+        return findById(connection, entity.getId()).orElse(entity);
     }
 
     @Override
-    public boolean deleteById(long id) throws DaoException {
+    public boolean deleteById(Connection connection, long id) throws DaoException {
 
         try {
-            return performPreparedUpdateReturnRows(DELETE_BY_ID_QUERY,
+            return performPreparedUpdateReturnRows(connection, DELETE_BY_ID_QUERY,
                     s -> s.setLong(1, id)) > 0;
         } catch (SQLException e) {
             logger.error("Delete account query error", e);
@@ -215,10 +215,10 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public BigDecimal sumAllByAccountId(Long id) throws DaoException {
+    public BigDecimal sumAllByAccountId(Connection connection, Long id) throws DaoException {
         BigDecimal sum;
         try {
-            sum = performPreparedExecuteQuery(SUM_BY_ID_QUERY,
+            sum = performPreparedExecuteQuery(connection, SUM_BY_ID_QUERY,
                     s -> {
                         s.setLong(1, id);
                         s.setLong(2, id);
@@ -234,9 +234,9 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public List<Account> findAllAccrual() throws DaoException {
+    public List<Account> findAllAccrual(Connection connection) throws DaoException {
         try {
-            return performStatement(FIND_ALL_ACCRUAL_QUERY, rs -> {
+            return performStatement(connection, FIND_ALL_ACCRUAL_QUERY, rs -> {
                 List<Account> list = new ArrayList<>();
                 while (rs.next()) {
                     Account v = mapEntity(rs);
@@ -251,11 +251,11 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public Account updateLastAccrualDate(Account account) throws DaoException {
+    public Account updateLastAccrualDate(Connection connection, Account account) throws DaoException {
         LocalDate now = LocalDate.now();
         try {
             logger.debug("Update account {} accrual date {}", account.getId(), now);
-            performPreparedUpdateReturnRows(UPDATE_ACCRUAL_DATE_QUERY, s -> {
+            performPreparedUpdateReturnRows(connection, UPDATE_ACCRUAL_DATE_QUERY, s -> {
                 s.setDate(1, Date.valueOf(now));
                 s.setLong(2, account.getId());
             });
@@ -268,10 +268,10 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public MoneyStatsDto calculateMoneyDataAllByIdAndBetweenDates(Long id, LocalDate from, LocalDate to) throws DaoException {
+    public MoneyStatsDto calculateMoneyDataAllByIdAndBetweenDates(Connection connection, Long id, LocalDate from, LocalDate to) throws DaoException {
         MoneyStatsDto stats;
         try {
-            stats = performPreparedExecuteQuery(SUM_INCOME_EXPENDITURE_BY_ID_BETWEEN_DATES, s -> {
+            stats = performPreparedExecuteQuery(connection, SUM_INCOME_EXPENDITURE_BY_ID_BETWEEN_DATES, s -> {
                 s.setLong(1, id);
                 s.setLong(2, id);
                 s.setLong(3, id);
@@ -301,10 +301,10 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public Optional<Account> findByAccountOrBankAndUser(String acc, long bankId, long userId) throws DaoException {
+    public Optional<Account> findByAccountOrBankAndUser(Connection connection, String acc, long bankId, long userId) throws DaoException {
         Optional<Account> account;
         try {
-            account = Optional.ofNullable(performPreparedExecuteQuery(FIND_BY_ID_BANK_USER_QUERY, s -> {
+            account = Optional.ofNullable(performPreparedExecuteQuery(connection, FIND_BY_ID_BANK_USER_QUERY, s -> {
                 s.setString(1, acc);
                 s.setLong(2, bankId);
                 s.setLong(3, userId);
@@ -317,9 +317,9 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public List<Account> findAllByBankId(long id) throws DaoException {
+    public List<Account> findAllByBankId(Connection connection, long id) throws DaoException {
         try {
-            return performPreparedExecuteQuery(FIND_ALL_QUERY_BY_BANK, s -> s.setLong(1, id), rs -> {
+            return performPreparedExecuteQuery(connection, FIND_ALL_QUERY_BY_BANK, s -> s.setLong(1, id), rs -> {
                 List<Account> list = new ArrayList<>();
                 while (rs.next()) {
                     Account v = mapEntity(rs);
@@ -334,9 +334,9 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public List<Account> findAllByUserId(long id) throws DaoException {
+    public List<Account> findAllByUserId(Connection connection, long id) throws DaoException {
         try {
-            return performPreparedExecuteQuery(FIND_ALL_QUERY_BY_USER,
+            return performPreparedExecuteQuery(connection, FIND_ALL_QUERY_BY_USER,
                     s -> s.setLong(1, id), rs -> {
                         List<Account> list = new ArrayList<>();
                         while (rs.next()) {
