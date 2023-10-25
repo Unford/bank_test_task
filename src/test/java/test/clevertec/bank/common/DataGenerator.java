@@ -1,4 +1,4 @@
-package test.clevertec.bank.gen;
+package test.clevertec.bank.common;
 
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;

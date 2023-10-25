@@ -5,13 +5,17 @@ import by.clevertec.bank.exception.ServiceException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
  class ServiceLogAspectTest {
     @Mock
     ProceedingJoinPoint joinPoint;
@@ -19,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
     Signature signature;
 
     @Test
+    @DisplayName("Should log method call and return result")
     void shouldLogMethodCallReturnResult() throws Throwable {
         String expected = "res";
         ServiceLogAspect aspect = new ServiceLogAspect();
@@ -38,6 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
     }
 
     @Test
+    @DisplayName("Should log method call with no args and return result")
     void shouldLogMethodCallWithNoArgsReturnResult() throws Throwable {
         String expected = "res";
         ServiceLogAspect aspect = new ServiceLogAspect();
@@ -57,6 +63,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
     }
 
     @Test
+    @DisplayName("Should log method call with null args and return result")
     void shouldLogMethodCallWithNullArgsReturnResult() throws Throwable {
         String expected = "res";
         ServiceLogAspect aspect = new ServiceLogAspect();
@@ -75,6 +82,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
     }
     @Test
+    @DisplayName("Should log method call with throwable inside")
     void shouldLogMethodCallWithThrowableInside() throws Throwable {
         ServiceException expected = new ServiceException();
         ServiceLogAspect aspect = new ServiceLogAspect();

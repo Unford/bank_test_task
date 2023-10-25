@@ -5,9 +5,12 @@ import by.clevertec.bank.exception.DaoException;
 import by.clevertec.bank.exception.ServiceException;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
-public class CommandExceptionTest {
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
+class CommandExceptionTest {
     @Test
     void shouldGetHttpCodeFromServiceException() {
         Assertions.assertThatException()

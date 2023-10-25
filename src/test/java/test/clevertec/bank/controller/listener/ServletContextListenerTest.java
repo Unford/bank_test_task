@@ -3,7 +3,6 @@ package test.clevertec.bank.controller.listener;
 import by.clevertec.bank.config.AppConfiguration;
 import by.clevertec.bank.controller.listener.ServletContextListenerImpl;
 import by.clevertec.bank.dao.ConnectionPool;
-import by.clevertec.bank.exception.ServiceException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletContainerInitializer;
@@ -25,14 +24,13 @@ import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.net.URIBuilder;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class ServletContextListenerTest {
     private Tomcat tomcat;
 
@@ -102,7 +101,8 @@ class ServletContextListenerTest {
     }
 
     @Test
-    void shouldRequestAndGetAppConfig() throws IOException, ServiceException, URISyntaxException {
+    @DisplayName("Request and Retrieve App Configuration")
+    void shouldRequestAndGetAppConfig() throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(getUriBuilder().build());
 
@@ -125,11 +125,14 @@ class ServletContextListenerTest {
             Assertions.assertThat(actual.getBusiness()).isEqualTo(businessConfig);
             Mockito.verify(listener, Mockito.times(1)).contextInitialized(Mockito.any());
 
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
 
     }
 
     @Test
+    @DisplayName("Should destroy context and close ConnectionPool")
     void shouldDestroyContext() {
         ServletContextListenerImpl servletContextListener = Mockito.spy(new ServletContextListenerImpl());
 

@@ -25,14 +25,13 @@ import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +43,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class TransactionServletTest {
     private Tomcat tomcat;
     @Mock
@@ -93,6 +93,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get a list of transactions and receive the expected list")
     void shouldRequestGetListAndGetListOfTransaction() throws IOException, ServiceException, URISyntaxException {
         List<TransactionDto> expected =
                 List.of(DataGenerator.generateTransactionDto(), DataGenerator.generateTransactionDto());
@@ -117,6 +118,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get a transaction by ID and receive the expected transaction")
     void shouldRequestServletAndGetTransactionById() throws IOException, ServiceException, URISyntaxException {
         TransactionDto expected = DataGenerator.generateTransactionDto();
         Mockito.when(service.findById(Mockito.anyLong())).thenReturn(expected);
@@ -140,6 +142,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get a list of transactions by account number and receive the expected list")
     void shouldRequestListOfTransactionsByAccount() throws IOException, ServiceException, URISyntaxException {
         List<TransactionDto> expected =
                 List.of(DataGenerator.generateTransactionDto(), DataGenerator.generateTransactionDto());
@@ -168,6 +171,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get a list of transactions by account ID and receive the expected list")
     void shouldRequestListOfTransactionsByAccountId() throws IOException, ServiceException, URISyntaxException {
         List<TransactionDto> expected =
                 List.of(DataGenerator.generateTransactionDto(), DataGenerator.generateTransactionDto());
@@ -197,6 +201,7 @@ class TransactionServletTest {
 
 
     @Test
+    @DisplayName("Should request to create a deposit and receive the expected transaction")
     void shouldRequestPostDepositAndGetCreated() throws IOException, ServiceException, URISyntaxException {
         TransactionDto expected = DataGenerator.generateTransactionDto();
         Mockito.when(service.deposit(Mockito.any())).thenReturn(expected);
@@ -226,6 +231,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to withdraw funds and receive the expected transaction")
     void shouldRequestPostWithdrawalAndGetCreated() throws IOException, ServiceException, URISyntaxException {
         TransactionDto expected = DataGenerator.generateTransactionDto();
         Mockito.when(service.withdrawal(Mockito.any())).thenReturn(expected);
@@ -255,6 +261,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to transfer funds and receive the expected transaction")
     void shouldRequestPostTransferAndGetCreated() throws IOException, ServiceException, URISyntaxException {
         TransactionDto expected = DataGenerator.generateTransactionDto();
         Mockito.when(service.transferMoney(Mockito.any())).thenReturn(expected);
@@ -284,6 +291,7 @@ class TransactionServletTest {
     }
 
     @Test
+    @DisplayName("Should request to delete by ID and receive the expected result")
     void shouldRequestDeleteById() throws IOException, ServiceException, URISyntaxException {
         Boolean expected = true;
         Mockito.when(service.deleteById(Mockito.anyLong())).thenReturn(expected);

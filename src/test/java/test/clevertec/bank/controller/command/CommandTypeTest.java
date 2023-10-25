@@ -6,17 +6,22 @@ import by.clevertec.bank.controller.command.Command;
 import by.clevertec.bank.controller.command.CommandType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class CommandTypeTest {
     @Mock
     HttpServletRequest request;
     @Test
+    @DisplayName("Should return default command if the command is unknown")
     void shouldReturnDefaultCommandIfUnknown() {
         Command expected = CommandType.DEFAULT_COMMAND.getCommand();
         Command actual = CommandType.defineCommand("some text", request);
@@ -24,6 +29,7 @@ class CommandTypeTest {
     }
 
     @Test
+    @DisplayName("Should return default command if the HTTP method is invalid")
     void shouldReturnDefaultCommandIfInvalidMethod() {
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.PUT);
         Mockito.when(request.getServletPath()).thenReturn(ServletPath.ACCOUNT);
@@ -37,6 +43,7 @@ class CommandTypeTest {
     }
 
     @Test
+    @DisplayName("Should return default command if invalid path")
     void shouldReturnDefaultCommandIfInvalidPath() {
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.POST);
         Mockito.when(request.getServletPath()).thenReturn(ServletPath.BANK);
@@ -49,6 +56,7 @@ class CommandTypeTest {
     }
 
     @Test
+    @DisplayName("Should return command by method and path")
     void shouldReturnCommandByMethodAndPath() {
         Mockito.when(request.getMethod()).thenReturn(HttpMethod.POST);
         Mockito.when(request.getServletPath()).thenReturn(ServletPath.ACCOUNT);

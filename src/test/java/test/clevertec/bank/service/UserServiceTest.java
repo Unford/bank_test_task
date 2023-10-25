@@ -13,12 +13,14 @@ import by.clevertec.bank.util.DataMapper;
 import com.zaxxer.hikari.HikariDataSource;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class UserServiceTest {
     @InjectMocks
     private UserServiceImpl service;

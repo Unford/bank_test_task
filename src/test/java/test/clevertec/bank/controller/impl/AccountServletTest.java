@@ -25,14 +25,13 @@ import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,8 +44,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class AccountServletTest {
-    private Tomcat tomcat;
+    private static Tomcat tomcat;
     @Mock
     private AccountServiceImpl service;
 
@@ -95,6 +95,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request a list of accounts and retrieve them")
     void shouldRequestListAndGetListOfAccounts() throws IOException, ServiceException, URISyntaxException {
         List<AccountDto> expected = List.of(DataGenerator.generateAccountDto(), DataGenerator.generateAccountDto());
         Mockito.when(service.findAll()).thenReturn(expected);
@@ -120,6 +121,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request a list and receive an error message")
     void shouldRequestListAndGetErrorMessage() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .message("hello")
@@ -147,6 +149,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request servlet and retrieve account by ID")
     void shouldRequestServletAndGetAccountById() throws IOException, ServiceException, URISyntaxException {
         AccountDto expected = DataGenerator.generateAccountDto();
         Mockito.when(service.findById(Mockito.anyLong())).thenReturn(expected);
@@ -170,6 +173,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request with negative ID and receive a bad request code")
     void shouldRequestWithNegativeIdAndGetError() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -199,6 +203,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request with invalid ID format and receive a bad request code")
     void shouldRequestWithInvalidFormatIdAndGetError() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -226,6 +231,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account balance by ID and receive the balance")
     void shouldRequestAccountBalanceById() throws IOException, ServiceException, URISyntaxException {
         AccountExtractDto expected = AccountExtractDto.builder()
                 .balance(BigDecimal.ONE)
@@ -256,6 +262,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request balance with negative ID and receive a bad request code")
     void shouldRequestBalanceWithNegativeIdAndGetError() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -286,6 +293,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request balance with invalid ID format and receive a bad request error")
     void shouldRequestBalanceWithInvalidIdFormatAndGetError() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -314,6 +322,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account extract by ID between dates and receive the extract")
     void shouldRequestAccountExtractByIdBetweenDates() throws IOException, ServiceException, URISyntaxException {
         AccountExtractDto expected = DataGenerator.generateAccountExtractDto();
         Mockito.when(service.getAccountExtract(Mockito.any())).thenReturn(expected);
@@ -342,6 +351,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account extract with an invalid ID and receive a bad request error")
     void shouldRequestAccountExtractByInvalidId() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -373,6 +383,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account extract and receive a service error")
     void shouldRequestAccountExtractAndGetServiceError() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -406,6 +417,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account extract with an invalid account number format and receive a bad request error")
     void shouldRequestAccountExtractByInvalidNumberFormat() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -435,6 +447,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account extract with an invalid 'from' date format and receive a bad request error")
     void shouldRequestAccountExtractByInvalidFromDateFormat() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -464,6 +477,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account extract with an invalid 'to' date format and receive a bad request error")
     void shouldRequestAccountExtractByInvalidToDateFormat() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -493,6 +507,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request account statement by ID between dates and receive the statement")
     void shouldRequestAccountStatementByIdBetweenDates() throws IOException, ServiceException, URISyntaxException {
         AccountStatementDto expected = DataGenerator.generateAccountStatementDto();
         Mockito.when(service.getAccountStatement(Mockito.any())).thenReturn(expected);
@@ -521,6 +536,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to delete account by ID and verify the deletion")
     void shouldRequestDeleteAccountById() throws IOException, ServiceException, URISyntaxException {
         Boolean expected = true;
         Mockito.when(service.deleteById(Mockito.anyLong())).thenReturn(expected);
@@ -545,6 +561,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to delete account with an invalid ID and receive a bad request error")
     void shouldRequestDeleteAccountByInvalidId() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -571,6 +588,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to delete account with an invalid ID format and receive a bad request error")
     void shouldRequestDeleteAccountByInvalidIdFormat() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.BAD_REQUEST)
@@ -597,6 +615,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to delete account by ID and receive a service error")
     void shouldRequestDeleteAccountByIdServiceThrowsException() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.CONFLICT)
@@ -628,6 +647,7 @@ class AccountServletTest {
 
 
     @Test
+    @DisplayName("Should request to update account and receive the updated account")
     void shouldRequestPutAccountAndGetUpdated() throws IOException, ServiceException, URISyntaxException {
         AccountDto expected = DataGenerator.generateAccountDto();
         Mockito.when(service.update(Mockito.any())).thenReturn(expected);
@@ -683,6 +703,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to update account with incorrect JSON and receive a bad request error")
     void shouldRequestPutInvalidAccountAndGetError() throws IOException, ServiceException, URISyntaxException {
         AccountDto invalidAccount = DataGenerator.generateAccountDto();
         invalidAccount.setId(-2L);
@@ -749,6 +770,7 @@ class AccountServletTest {
 
 
     @Test
+    @DisplayName("Should request to update account and receive a service error")
     void shouldRequestPostAccountAndGetCreated() throws IOException, ServiceException, URISyntaxException {
         AccountDto expected = DataGenerator.generateAccountDto();
         Mockito.when(service.create(Mockito.any())).thenReturn(expected);
@@ -776,6 +798,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to create an account with invalid data and receive a bad request error")
     void shouldRequestPostInvalidAccountAndError() throws IOException, ServiceException, URISyntaxException {
         AccountDto invalid = DataGenerator.generateAccountDto();
         invalid.setAccount(null);
@@ -810,6 +833,7 @@ class AccountServletTest {
     }
 
     @Test
+    @DisplayName("Should request to create an account and receive a service error")
     void shouldRequestPostAccountAndGetServiceError() throws IOException, ServiceException, URISyntaxException {
         CustomError expected = CustomError.builder()
                 .code(CustomError.NOT_FOUND)

@@ -3,9 +3,12 @@ package test.clevertec.bank.model.domain;
 import by.clevertec.bank.model.domain.Account;
 import by.clevertec.bank.model.domain.AccountTransaction;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
  class DomainTest {
     @Test
     void shouldCreateAccountByAllArgsConstructor(){

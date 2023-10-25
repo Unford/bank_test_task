@@ -4,6 +4,7 @@ import by.clevertec.bank.dao.ConnectionPool;
 import by.clevertec.bank.exception.ServiceException;
 import com.zaxxer.hikari.HikariDataSource;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
@@ -11,6 +12,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.postgresql.Driver;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,7 +22,8 @@ import java.util.concurrent.*;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
-public class ConnectionPoolTest {
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
+class ConnectionPoolTest {
 
 
     @Test

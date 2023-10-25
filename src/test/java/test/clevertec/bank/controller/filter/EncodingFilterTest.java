@@ -18,15 +18,15 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class EncodingFilterTest {
     private Tomcat tomcat;
 
@@ -84,6 +84,7 @@ class EncodingFilterTest {
     }
 
     @Test
+    @DisplayName("Should include 'Content-Type' header in the response with 'UTF-8' and 'application/json' values")
     void shouldRequestAndAddContentTypeHeader() throws IOException, ServiceException, URISyntaxException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(getUriBuilder().build());

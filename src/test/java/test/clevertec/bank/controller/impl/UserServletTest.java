@@ -26,14 +26,13 @@ import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +44,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class UserServletTest {
     private Tomcat tomcat;
     @Mock
@@ -94,6 +94,7 @@ class UserServletTest {
     }
 
     @Test
+    @DisplayName("Should request list and get list of users")
     void shouldRequestListAndGetListOfUsers() throws IOException, ServiceException, URISyntaxException {
         List<UserDto> expected = List.of(DataGenerator.generateUserDto(), DataGenerator.generateUserDto());
         Mockito.when(service.findAll()).thenReturn(expected);
@@ -117,6 +118,7 @@ class UserServletTest {
     }
 
     @Test
+    @DisplayName("Should request user by ID and receive the expected user")
     void shouldRequestServletAndGetUserById() throws IOException, ServiceException, URISyntaxException {
         UserDto expected = DataGenerator.generateUserDto();
         Mockito.when(service.findById(Mockito.anyLong())).thenReturn(expected);
@@ -140,6 +142,7 @@ class UserServletTest {
     }
 
     @Test
+    @DisplayName("Should request user by ID with command and receive the expected user")
     void shouldRequestUserByIdWithCommand() throws IOException, ServiceException, URISyntaxException {
         UserDto expected = DataGenerator.generateUserDto();
         Mockito.when(service.findById(Mockito.anyLong())).thenReturn(expected);
@@ -166,6 +169,7 @@ class UserServletTest {
 
 
     @Test
+    @DisplayName("Should request PUT request to update user and get the updated user")
     void shouldRequestPutUserAndGetUpdated() throws IOException, ServiceException, URISyntaxException {
         UserDto expected = DataGenerator.generateUserDto();
         Mockito.when(service.update(Mockito.any())).thenReturn(expected);
@@ -193,6 +197,7 @@ class UserServletTest {
     }
 
     @Test
+    @DisplayName("Should send POST request to create a user and receive the created user")
     void shouldRequestPostUserAndGetCreated() throws IOException, ServiceException, URISyntaxException {
         UserDto expected = DataGenerator.generateUserDto();
         Mockito.when(service.create(Mockito.any())).thenReturn(expected);
@@ -220,6 +225,7 @@ class UserServletTest {
     }
 
     @Test
+    @DisplayName("Should request DELETE request by ID and receive a boolean result")
     void shouldRequestDeleteById() throws IOException, ServiceException, URISyntaxException {
         Boolean expected = true;
         Mockito.when(service.deleteById(Mockito.anyLong())).thenReturn(expected);

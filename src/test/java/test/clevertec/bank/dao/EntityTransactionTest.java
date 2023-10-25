@@ -5,12 +5,14 @@ import by.clevertec.bank.dao.EntityTransaction;
 import by.clevertec.bank.exception.DaoException;
 import com.zaxxer.hikari.HikariDataSource;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class EntityTransactionTest {
     @Mock
     private HikariDataSource dataSource;

@@ -26,14 +26,13 @@ import org.apache.hc.core5.http.URIScheme;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +44,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class BankServletTest {
     private Tomcat tomcat;
     @Mock
@@ -94,6 +94,7 @@ class BankServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get a list of banks and receive the expected list")
     void shouldRequestGetListAndGetListOfBanks() throws IOException, ServiceException, URISyntaxException {
         List<BankDto> expected = List.of(DataGenerator.generateBankDto(), DataGenerator.generateBankDto());
         Mockito.when(service.findAll()).thenReturn(expected);
@@ -117,6 +118,7 @@ class BankServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get bank information by ID and receive the expected bank information")
     void shouldRequestServletAndGetBankById() throws IOException, ServiceException, URISyntaxException {
         BankDto expected = DataGenerator.generateBankDto();
         Mockito.when(service.findById(Mockito.anyLong())).thenReturn(expected);
@@ -140,6 +142,7 @@ class BankServletTest {
     }
 
     @Test
+    @DisplayName("Should request to get bank information by ID with command and receive the expected bank information")
     void shouldRequestBankByIdWithCommand() throws IOException, ServiceException, URISyntaxException {
         BankDto expected = DataGenerator.generateBankDto();
         Mockito.when(service.findById(Mockito.anyLong())).thenReturn(expected);
@@ -167,6 +170,7 @@ class BankServletTest {
 
 
     @Test
+    @DisplayName("Should request to update bank information and receive the updated bank information")
     void shouldRequestPutBankAndGetUpdated() throws IOException, ServiceException, URISyntaxException {
         BankDto expected = DataGenerator.generateBankDto();
         Mockito.when(service.update(Mockito.any())).thenReturn(expected);
@@ -194,6 +198,7 @@ class BankServletTest {
     }
 
     @Test
+    @DisplayName("Should request to create a bank and receive the created bank information")
     void shouldRequestPostBankAndGetCreated() throws IOException, ServiceException, URISyntaxException {
         BankDto expected = DataGenerator.generateBankDto();
         Mockito.when(service.create(Mockito.any())).thenReturn(expected);
@@ -221,6 +226,7 @@ class BankServletTest {
     }
 
     @Test
+    @DisplayName("Should request to delete a bank by ID and receive the expected result")
     void shouldRequestDeleteById() throws IOException, ServiceException, URISyntaxException {
         Boolean expected = true;
         Mockito.when(service.deleteById(Mockito.anyLong())).thenReturn(expected);

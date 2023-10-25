@@ -27,6 +27,7 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
+    testImplementation 'org.projectlombok:lombok:1.18.28'
     compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'

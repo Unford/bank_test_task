@@ -10,7 +10,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.testcontainers.containers.PostgreSQLContainer;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class AccountTransactionDaoTest {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.9")
             .withInitScript("init_script.sql");

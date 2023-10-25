@@ -10,13 +10,15 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-import test.clevertec.bank.gen.DataGenerator;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
+import test.clevertec.bank.common.DataGenerator;
 
 import java.sql.*;
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class UserDaoTest {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14.9")
             .withInitScript("init_script.sql");
@@ -180,10 +182,10 @@ class UserDaoTest {
         ResultSet resultSetMock = Mockito.mock(ResultSet.class);
 
         Mockito.when(connectionMock.prepareStatement(Mockito.any(), Mockito.anyInt())).thenReturn(statementMock);
-
         Mockito.when(statementMock.executeUpdate()).thenReturn(1);
         Mockito.when(statementMock.getGeneratedKeys()).thenReturn(resultSetMock);
         Mockito.when(resultSetMock.next()).thenReturn(false);
+
         Mockito.doReturn(Optional.of(new User(1L, "test")))
                 .when(userDao).findById(Mockito.any(), Mockito.anyLong());
 

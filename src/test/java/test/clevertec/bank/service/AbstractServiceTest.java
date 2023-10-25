@@ -7,6 +7,7 @@ import by.clevertec.bank.exception.ServiceException;
 import by.clevertec.bank.service.impl.AccountServiceImpl;
 import com.zaxxer.hikari.HikariDataSource;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,11 +15,13 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import test.clevertec.bank.common.CamelCaseAndUnderscoreNameGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(CamelCaseAndUnderscoreNameGenerator.class)
 class AbstractServiceTest {
 
     @InjectMocks
